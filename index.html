@@ -1229,70 +1229,70 @@ const RE_NODES=[
 // Positioned above Earth — rendered as special markers on the globe
 // lat/lng represent substellar point or geopolitical anchor location
 const SPACE_NODES = [
-  {n:'ISS',layer:'space',lat:51.6,lng:0,ent:.18,coh:.82,ev:true,th:0.6,ph:1.2,
+  {n:'ISS',layer:'space',lat:51.6,lng:0,ent:.45,coh:.55,ev:true,th:1.4,ph:1.2,isSpace:true,
    ts:[1,1,1,0,0,0],
    why:['Orbital altitude 408km — crewed international research platform',
         'US-Russia-China cooperation under structural pressure',
         'Post-2030 deorbit plan creates program continuity uncertainty'],
    d:'International Space Station — real-time position via live feed'},
 
-  {n:'Moon',layer:'space',lat:0,lng:20,ent:.35,coh:.65,ev:false,th:1.1,ph:2.1,
+  {n:'Moon',layer:'space',lat:0,lng:20,ent:.52,coh:.48,ev:false,th:1.6,ph:2.1,isSpace:true,
    ts:[2,2,1,1,0,0],
    why:['Artemis III crewed landing targeting 2027 — lunar south pole',
         "Chang'e 7 targeting 2026 — same south pole water ice deposit",
         'First nation to establish permanent lunar presence controls helium-3 and water ice'],
    d:'Lunar competition — US vs China south pole resource race'},
 
-  {n:'Mars',layer:'space',lat:0,lng:160,ent:.55,coh:.45,ev:false,th:1.7,ph:3.5,
+  {n:'Mars',layer:'space',lat:0,lng:160,ent:.62,coh:.38,ev:false,th:1.9,ph:3.5,isSpace:true,
    ts:[2,2,2,2,1,0],
    why:['SpaceX Starship Mars mission targeting 2026 — first uncrewed landing',
         'NASA-SpaceX architecture dependency creates single point of failure',
         'Dust storm season 2026 creates mission window uncertainty'],
    d:'Mars colonization race — SpaceX vs geopolitical context'},
 
-  {n:'Solar Activity',layer:'space',lat:0,lng:90,ent:.28,coh:.72,ev:true,th:0.9,ph:1.8,
+  {n:'Solar Activity',layer:'space',lat:0,lng:90,ent:.42,coh:.58,ev:true,th:1.3,ph:1.8,isSpace:true,
    ts:[1,1,2,2,1,0],
    why:['Solar Cycle 25 approaching maximum 2025-2026',
         'X-class flares disrupt GPS satellite comms and power grids',
         'Geomagnetic storms elevate satellite drag — orbital decay accelerates'],
    d:'Solar Cycle 25 peak — space weather risk elevated'},
 
-  {n:'Starlink',layer:'space',lat:53,lng:-100,ent:.32,coh:.68,ev:true,th:1.0,ph:2.4,
+  {n:'Starlink',layer:'space',lat:53,lng:-100,ent:.48,coh:.52,ev:true,th:1.5,ph:2.4,isSpace:true,
    ts:[1,1,1,2,1,0],
    why:['6000+ satellites operational — largest constellation in history',
         'Ukrainian battlefield dependency creates geopolitical vulnerability',
         'Kessler syndrome risk rising with debris density in LEO'],
    d:'Starlink LEO constellation — military/civilian dual-use tension'},
 
-  {n:'GPS Constellation',layer:'space',lat:55,lng:20,ent:.22,coh:.78,ev:true,th:0.7,ph:1.4,
+  {n:'GPS Constellation',layer:'space',lat:55,lng:20,ent:.38,coh:.62,ev:true,th:1.2,ph:1.4,isSpace:true,
    ts:[1,0,0,0,0,0],
    why:['31 operational GPS satellites — US military and civilian backbone',
         'Russia GLONASS + China BeiDou creating multi-constellation competition',
         'Solar flare disruption risk elevated during Cycle 25 peak'],
    d:'GPS/GNSS global navigation — solar weather vulnerability'},
 
-  {n:'Artemis Program',layer:'space',lat:28.5,lng:-80.5,ent:.52,coh:.48,ev:false,th:1.6,ph:3.1,
+  {n:'Artemis Program',layer:'space',lat:28.5,lng:-80.5,ent:.58,coh:.42,ev:false,th:1.8,ph:3.1,isSpace:true,
    ts:[2,2,2,1,0,0],
    why:['Artemis III crewed lunar landing slipping from 2026 to 2027+',
         "China Chang'e program accelerating — competitive pressure on timeline",
         'Budget uncertainty under new administration creates program risk'],
    d:'NASA Artemis — crewed return to Moon under competitive pressure'},
 
-  {n:'Asteroid Belt',layer:'space',lat:-5,lng:135,ent:.18,coh:.82,ev:true,th:0.6,ph:0.9,
+  {n:'Asteroid Belt',layer:'space',lat:-5,lng:135,ent:.35,coh:.65,ev:true,th:1.1,ph:0.9,isSpace:true,
    ts:[0,0,0,0,0,0],
    why:['Near-Earth asteroid mining commercially viable by 2030+',
         'Psyche mission orbiting metal-rich asteroid — $10 quintillion resource estimate',
         'No legal framework for extraterrestrial resource ownership'],
    d:'Space mining — asteroid resource rights undefined'},
 
-  {n:'Space Debris',layer:'space',lat:0,lng:-45,ent:.45,coh:.55,ev:false,th:1.4,ph:2.7,
+  {n:'Space Debris',layer:'space',lat:0,lng:-45,ent:.65,coh:.35,ev:false,th:2.0,ph:2.7,isSpace:true,
    ts:[2,2,2,2,2,1],
    why:['27000+ tracked debris objects in orbit',
         'Russian ASAT test 2021 debris field still active',
         'Kessler cascade risk threshold approaching in LEO bands'],
    d:'Orbital debris — Kessler cascade risk in low Earth orbit'},
 
-  {n:'Deep Space Comms',layer:'space',lat:35,lng:-116,ent:.25,coh:.75,ev:true,th:0.8,ph:1.6,
+  {n:'Deep Space Comms',layer:'space',lat:35,lng:-116,ent:.40,coh:.60,ev:true,th:1.3,ph:1.6,isSpace:true,
    ts:[1,1,1,0,0,0],
    why:['NASA Deep Space Network — Goldstone Madrid Canberra',
         'Mars/Moon mission communication latency creates autonomous operation dependency',
@@ -1732,12 +1732,15 @@ function buildBars(){
     // Local nodes only visible at county/zip zoom
     const isRE=n.layer&&n.layer.startsWith('re_');const zoomOk=isRE||!n.isLocal||(n.localLevel===3?(currentZoomLevel==='zip'):(currentZoomLevel==='county'||currentZoomLevel==='zip'));
     const vis=activeLayers.has(n.layer)&&zoomOk;
+    const isSpace=!!n.isSpace;
     const pos=ll2v(n.lat,n.lng,R*1.004);
     const dir=pos.clone().normalize();
     // Build bars at canonical size — updateBars() scales dynamically per zoom
     const localScale=n.isLocal&&!n.layer.startsWith('re_')?0.75:1.0;
-    const barH=(0.08+(c.signal/100)*0.55)*localScale;  // max 0.63 — visible at global zoom
-    const barW=(0.022+c.ent*.014)*localScale;            // max 0.036 — clickable target
+    // Space nodes get taller bars + wider so they're visible against the globe
+    const spaceScale=isSpace?1.8:1.0;
+    const barH=(0.08+(c.signal/100)*0.55)*localScale*spaceScale;  // max 0.63 — visible at global zoom
+    const barW=(0.022+c.ent*.014)*localScale*(isSpace?1.6:1.0);   // space nodes wider
     const geo=new THREE.CylinderGeometry(barW,barW*1.15,barH,8);
     const mat=new THREE.MeshBasicMaterial({
       color:new THREE.Color(col.r,col.g,col.b),
@@ -1766,6 +1769,17 @@ function buildBars(){
       oppRing.lookAt(new THREE.Vector3(0,0,0));
       oppRing.visible=vis;
       barGrp.add(oppRing);
+    }
+    // Space nodes get a distinct orbit ring — cyan, larger, pulsing via userData
+    if(isSpace){
+      const spaceRingGeo=new THREE.RingGeometry(barW*3.5,barW*4.5,12);
+      const spaceRingMat=new THREE.MeshBasicMaterial({color:0x00e5ff,transparent:true,opacity:.55,side:THREE.DoubleSide});
+      const spaceRing=new THREE.Mesh(spaceRingGeo,spaceRingMat);
+      spaceRing.position.copy(dir.clone().multiplyScalar(R*1.004+barH+.003));
+      spaceRing.lookAt(new THREE.Vector3(0,0,0));
+      spaceRing.visible=vis;
+      spaceRing.userData={isSpaceRing:true};
+      barGrp.add(spaceRing);
     }
   });
 }
