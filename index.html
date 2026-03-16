@@ -730,10 +730,31 @@ body.top5-open #globe-panel{top:132px}
     <div class="tp-skip" onclick="useOSMFallback()">Skip — use OpenStreetMap fallback (no token needed, lower quality)</div>
   </div>
   <!-- Mapbox map container -->
-  <!-- ZIP SEARCH BAR -->
+  <!-- SEARCH BAR — ZIP or Corporate -->
   <div id="zip-search-bar">
-    <input id="zip-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" placeholder="Enter ZIP code (e.g. 10001, 90210, 33101)…" autocomplete="off">
-    <button id="zip-btn" onclick="searchZIP()">⊛ NERVA</button>
+    <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:4px;overflow:hidden;flex-shrink:0">
+      <button id="search-mode-res" onclick="setSearchMode('residential')" style="padding:5px 10px;background:rgba(0,255,157,.08);border:none;color:var(--commit);font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:1px;cursor:pointer;white-space:nowrap">🏠 Residential</button>
+      <button id="search-mode-corp" onclick="setSearchMode('corporate')" style="padding:5px 10px;background:none;border:none;border-left:1px solid var(--border);color:var(--t3);font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:1px;cursor:pointer;white-space:nowrap">🏢 Corporate</button>
+    </div>
+    <input id="zip-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" placeholder="ZIP code (e.g. 10001)…" autocomplete="off" style="flex:1">
+    <select id="corp-metro" style="display:none;flex:1;padding:6px 10px;background:rgba(255,255,255,.04);border:1px solid var(--border2);color:var(--t1);font-family:'IBM Plex Mono',monospace;font-size:10px;border-radius:4px;outline:none">
+      <option value="NYC">New York</option><option value="LA">Los Angeles</option>
+      <option value="Chicago">Chicago</option><option value="Dallas">Dallas</option>
+      <option value="Houston">Houston</option><option value="DC">Washington DC</option>
+      <option value="Miami">Miami</option><option value="Atlanta">Atlanta</option>
+      <option value="Boston">Boston</option><option value="Seattle">Seattle</option>
+      <option value="SF">San Francisco</option><option value="Austin">Austin</option>
+      <option value="Nashville">Nashville</option><option value="Charlotte">Charlotte</option>
+      <option value="Denver">Denver</option><option value="Phoenix">Phoenix</option>
+      <option value="Detroit">Detroit</option>
+    </select>
+    <select id="corp-type" style="display:none;padding:6px 10px;background:rgba(255,255,255,.04);border:1px solid var(--border2);color:var(--t1);font-family:'IBM Plex Mono',monospace;font-size:10px;border-radius:4px;outline:none">
+      <option value="office">Office</option>
+      <option value="multifamily">Multifamily</option>
+      <option value="industrial">Industrial</option>
+      <option value="retail">Retail</option>
+    </select>
+    <button id="zip-btn" onclick="handleSearch()">⊛ NERVA</button>
   </div>
   <!-- ZIP RESULT CARD -->
   <div id="zip-result">
@@ -3407,10 +3428,127 @@ checkMobile();
 // ZIP SEARCH ENGINE — Census ACS → NERVA decision signal
 // ════════════════════════════════════════════════════════════════
 
-// Allow Enter key to trigger search
+// ════════════════════════════════════════════════════════════════
+// SEARCH MODE CONTROLLER
+// ════════════════════════════════════════════════════════════════
+let searchMode = 'residential';
+
+function setSearchMode(mode) {
+  searchMode = mode;
+  const isRes = mode === 'residential';
+  document.getElementById('search-mode-res').style.background = isRes ? 'rgba(0,255,157,.08)' : 'none';
+  document.getElementById('search-mode-res').style.color = isRes ? 'var(--commit)' : 'var(--t3)';
+  document.getElementById('search-mode-corp').style.background = !isRes ? 'rgba(251,191,36,.08)' : 'none';
+  document.getElementById('search-mode-corp').style.color = !isRes ? 'var(--hold)' : 'var(--t3)';
+  document.getElementById('zip-input').style.display = isRes ? 'block' : 'none';
+  document.getElementById('corp-metro').style.display = isRes ? 'none' : 'block';
+  document.getElementById('corp-type').style.display = isRes ? 'none' : 'block';
+  document.getElementById('zip-btn').textContent = '⊛ NERVA';
+  closeZIPResult();
+}
+
+function handleSearch() {
+  if (searchMode === 'corporate') searchCorporate();
+  else searchZIP();
+}
+
+// ── Corporate RE Search ──
+async function searchCorporate() {
+  const btn = document.getElementById('zip-btn');
+  const metro = document.getElementById('corp-metro').value;
+  const type = document.getElementById('corp-type').value;
+
+  btn.classList.add('loading');
+  btn.textContent = '…';
+
+  try {
+    const res = await fetch(`/api/corporate?metro=${metro}&type=${type}`, {
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) throw new Error(`Corporate API ${res.status}`);
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'No data');
+
+    renderCorporateResult(data);
+  } catch(e) {
+    document.getElementById('zr-name').textContent = 'No data found';
+    document.getElementById('zr-sub').textContent = e.message;
+    document.getElementById('zr-body').innerHTML = `<div style="font-size:9px;color:var(--t3);padding:8px 0">${e.message}</div>`;
+    document.getElementById('zip-result').classList.add('vis');
+  } finally {
+    btn.classList.remove('loading');
+    btn.textContent = '⊛ NERVA';
+  }
+}
+
+function renderCorporateResult(data) {
+  const n = data.nerva;
+  const m = data.market;
+  const col = SC[n.state] || SC.HOLD;
+  const hex = '#' + [col.r,col.g,col.b].map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('');
+  const typeLabels = { office:'Office', multifamily:'Multifamily', industrial:'Industrial', retail:'Retail' };
+
+  document.getElementById('zr-name').textContent = `${data.metro} ${typeLabels[data.type]||data.type}`;
+  document.getElementById('zr-name').style.color = hex;
+  document.getElementById('zr-sub').textContent = `Corporate RE · ${data.dataAge} · NERVA Signal`;
+
+  document.getElementById('zr-body').innerHTML = `
+    <div class="zr-state" style="color:${hex}">${n.state}</div>
+    <div class="zr-grid">
+      <div class="zr-cell" style="border-color:${hex}">
+        <div class="zr-cell-lbl">Signal</div>
+        <div class="zr-cell-val" style="color:${hex}">${n.signal.toFixed(0)}%</div>
+      </div>
+      <div class="zr-cell" style="border-color:var(--t3)">
+        <div class="zr-cell-lbl">Vacancy</div>
+        <div class="zr-cell-val" style="color:${m.vacancy>0.20?'var(--toxic)':m.vacancy>0.12?'var(--escalate)':'var(--commit)'}">${m.vacancyPct}</div>
+      </div>
+      <div class="zr-cell" style="border-color:var(--t3)">
+        <div class="zr-cell-lbl">Cap Rate</div>
+        <div class="zr-cell-val" style="color:var(--t2)">${m.capRatePct}</div>
+      </div>
+      <div class="zr-cell" style="border-color:var(--t3)">
+        <div class="zr-cell-lbl">Avg Lease</div>
+        <div class="zr-cell-val" style="color:var(--t2)">${m.avgLeaseTerm}yr</div>
+      </div>
+      <div class="zr-cell" style="border-color:${n.evGate?'var(--commit)':'var(--toxic)'}">
+        <div class="zr-cell-lbl">EV Gate</div>
+        <div class="zr-cell-val" style="color:${n.evGate?'var(--commit)':'var(--toxic)'}">${n.evGate?'PASS ✓':'FAIL ✗'}</div>
+      </div>
+      <div class="zr-cell" style="border-color:var(--t3)">
+        <div class="zr-cell-lbl">Implied DSCR</div>
+        <div class="zr-cell-val" style="color:${m.dscr>1.25?'var(--commit)':m.dscr>1.0?'var(--hold)':'var(--toxic)'}">${m.dscr}x</div>
+      </div>
+    </div>
+    <div class="zr-action" style="color:${hex};border-color:${hex}40;background:${hex}10">${n.action}</div>
+    <div class="zr-why">${(n.why||[]).map(w=>`<div class="zr-why-item">· ${w}</div>`).join('')}</div>
+    <div style="margin-top:8px;padding:5px 8px;background:rgba(255,255,255,.015);border-radius:3px;font-size:7px;color:var(--t3)">
+      Trend: <span style="color:${m.trend==='improving'?'var(--commit)':m.trend==='declining'?'var(--toxic)':'var(--hold)'}">${m.trend.toUpperCase()}</span> · 
+      Debt: ${m.commercialMortgageRate?.toFixed(2)||'—'}% · 
+      Source: ${data.dataSource}
+    </div>`;
+
+  document.getElementById('zip-result').classList.add('vis');
+}
+
+// ── NERVA API integration — call /api/nerva for any custom decision ──
+async function callNERVAAPI(mode, inputs, horizon = 1) {
+  if (!ON_VERCEL) return null;
+  try {
+    const res = await fetch('/api/nerva', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mode, inputs, horizon }),
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch(e) { return null; }
+}
+
+// Allow Enter key to trigger search (update for both modes)
 document.getElementById('zip-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') searchZIP();
-  // Only allow digits
+  if (e.key === 'Enter') handleSearch();
   if (!/[\d\b]/.test(e.key) && !['ArrowLeft','ArrowRight','Delete','Tab','Backspace'].includes(e.key)) {
     e.preventDefault();
   }
