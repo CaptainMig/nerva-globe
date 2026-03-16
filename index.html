@@ -691,6 +691,10 @@ body.top5-open #globe-panel{top:132px}
       <div id="fred-dot" style="width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0"></div>
       <span style="font-size:8.5px;color:var(--t2)" id="fred-status">FRED — standby</span>
     </div>
+    <div id="feed-eia" style="display:flex;gap:5px;align-items:center;margin-right:14px;flex-shrink:0">
+      <div id="eia-dot" style="width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0"></div>
+      <span style="font-size:8.5px;color:var(--t2)" id="eia-status">EIA Energy — standby</span>
+    </div>
     <div style="margin-left:auto;font-size:7.5px;color:var(--t3);flex-shrink:0;padding-left:8px" id="live-lastupdate">Not loaded</div>
     <button onclick="fetchAllLiveData()" style="margin-left:8px;padding:3px 10px;border:1px solid var(--border2);background:none;color:var(--t2);font-family:'IBM Plex Mono',monospace;font-size:7.5px;letter-spacing:1px;border-radius:3px;cursor:pointer;flex-shrink:0">↻</button>
   </div>
@@ -2474,6 +2478,69 @@ async function fetchFRED() {
   }
 }
 
+// ── EIA Energy Price Feed ──
+async function fetchEIA(){
+  if(!ON_VERCEL){
+    const el=document.getElementById('eia-status');
+    if(el)el.textContent='EIA — deploy to Vercel to activate';
+    return null;
+  }
+  const dot=document.getElementById('eia-dot');
+  const status=document.getElementById('eia-status');
+  if(dot)dot.style.background='var(--hold)';
+  if(status)status.textContent='EIA Energy — loading…';
+  try{
+    const res=await fetch('/api/energy?series=all',{signal:AbortSignal.timeout(10000)});
+    if(!res.ok)throw new Error(`EIA API ${res.status}`);
+    const data=await res.json();
+    if(!data.ok)throw new Error(data.error||'EIA error');
+
+    // Apply node entropy mods from energy price signals
+    // nodeMods keyed by LAYER name — find matching NERVA nodes
+    Object.entries(data.nodeMods||{}).forEach(([layer, mod])=>{
+      if(mod.entDelta>0){
+        const nodes=[...NODES,...RE_NODES].filter(n=>n.layer===layer);
+        nodes.forEach(n=>{
+          LIVE_MODS[n.n]={
+            ...(LIVE_MODS[n.n]||{}),
+            entDelta:Math.min(0.25,(LIVE_MODS[n.n]?.entDelta||0)+mod.entDelta),
+            liveReason:`EIA: ${mod.reason}`,
+          };
+        });
+      }
+    });
+
+    // Push significant price events to live feed
+    (data.events||[]).forEach(ev=>{
+      const icon=ev.type==='extreme'?'🛢️':'⚡';
+      addLiveEvent(`${icon} ${ev.message}`,'var(--hold)');
+    });
+
+    // Build status line
+    const wti=data.series?.wti;
+    const brent=data.series?.brent;
+    const natgas=data.series?.natgas;
+    const parts=[];
+    if(wti?.latest)parts.push(`WTI $${wti.latest.value.toFixed(0)}`);
+    if(brent?.latest)parts.push(`Brent $${brent.latest.value.toFixed(0)}`);
+    if(natgas?.latest)parts.push(`Gas $${natgas.latest.value.toFixed(2)}`);
+
+    if(dot)dot.style.background='var(--commit)';
+    if(status)status.textContent=`EIA — ${parts.join(' · ')}`;
+
+    // Add to live event feed
+    if(parts.length){
+      addLiveEvent(`🛢️ EIA Energy: ${parts.join(' · ')} · ${data.composite?.state||''}`, 'var(--hold)');
+    }
+
+    return data;
+  }catch(e){
+    if(dot)dot.style.background='var(--escalate)';
+    if(status)status.textContent=`EIA — ${e.message}`;
+    return null;
+  }
+}
+
 async function fetchCensusAPI() {
   return null; // wiring later — FRED first
   if (!ON_VERCEL) return null;
@@ -2553,13 +2620,14 @@ async function fetchAllLiveData(){
   const lastEl=document.getElementById('live-lastupdate');
   if(lastEl)lastEl.textContent='Fetching…';
 
-  // Run all feeds in parallel — existing direct feeds + new API layer
+  // Run all feeds in parallel — existing direct feeds + API layer
   const results = await Promise.allSettled([
     fetchFEMA(),        // Direct: FEMA NFIP claims
     fetchUSGS(),        // Direct: earthquake feed
     fetchNOAA(),        // Direct: weather alerts
     fetchOpenMeteo(),   // Direct: temperature anomaly
     fetchFRED(),        // API: FRED economic data
+    fetchEIA(),         // API: EIA energy prices (WTI, Brent, gas)
   ]);
 
   liveDataLoaded=true;
