@@ -1393,6 +1393,8 @@ function initGL(){
   buildLayerPanel();rebuildNodeList();updateMacro();
   loadingStep(80,'Reading URL state…');
   readURLState();
+  // Rebuild bars AFTER URL state so layer filters take effect
+  buildBars();applyBarScale();rebuildNodeList();updateMacro();
   buildTop5();
   loadingStep(95,'Rendering globe…');
   // Small delay so progress bar is visible, then dismiss loader
@@ -4055,7 +4057,13 @@ function enrichZIPWithRealty(realtyData, censusResult) {
 
 
 // ── Boot ──
-const IS_MOBILE = window.innerWidth <= 700 || /iPhone|Android|iPad|Mobile/i.test(navigator.userAgent);
+// Mobile detection: only trigger on genuinely small screens
+// Use screen.width (physical) not window.innerWidth (can be resized)
+// AND require touch support — desktop browsers don't have ontouchstart
+const IS_MOBILE = (
+  (window.innerWidth <= 600 || screen.width <= 600) &&
+  ('ontouchstart' in window || navigator.maxTouchPoints > 0)
+);
 if (IS_MOBILE) {
   initMobileDashboard();
 } else {
