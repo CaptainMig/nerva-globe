@@ -33,7 +33,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t2);font-
 .m-lbl{font-size:6px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:1px}
 .m-val{font-family:'Bebas Neue',sans-serif;font-size:18px;line-height:1;letter-spacing:1px}
 .tb-btns{display:flex;gap:4px;align-items:center}
-.tb-btn{padding:4px 10px;border-radius:3px;font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;background:none;border:1px solid var(--border);color:var(--t3);transition:all .18s}
+.tb-btn{padding:4px 10px;border-radius:3px;font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;background:none;border:1px solid var(--border);color:var(--t2);transition:all .18s}
 .tb-btn:hover{border-color:var(--border2);color:var(--t2)}
 .tb-btn.on{border-color:rgba(255,255,255,0.2);color:var(--t1);background:rgba(255,255,255,0.04)}
 .tb-btn.opp-btn.on{border-color:var(--opp);color:var(--opp);background:rgba(224,64,251,0.06)}
@@ -47,7 +47,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t2);font-
 .lp-pane{padding:6px 8px;display:none;flex-direction:column;gap:1px}
 .lp-pane.act{display:flex}
 .grp-lbl{font-size:6px;letter-spacing:2.5px;text-transform:uppercase;color:var(--t3);padding:6px 4px 2px;margin-top:2px}
-.lay-btn{display:flex;align-items:center;gap:5px;padding:3px 4px;border-radius:3px;cursor:pointer;border:none;background:none;color:var(--t3);font-family:'IBM Plex Mono',monospace;font-size:8px;width:100%;text-align:left;transition:all .15s}
+.lay-btn{display:flex;align-items:center;gap:5px;padding:4px 6px;border-radius:3px;cursor:pointer;border:none;background:none;color:var(--t2);font-family:'IBM Plex Mono',monospace;font-size:8px;width:100%;text-align:left;transition:all .15s}
 .lay-btn:hover{color:var(--t2);background:rgba(255,255,255,0.012)}
 .lay-btn.on{color:var(--t2)}
 .lay-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;opacity:.2}
@@ -153,14 +153,14 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t2);font-
 
 /* ══ BOTTOM BAR ══ */
 .bot{position:fixed;bottom:0;left:176px;right:210px;height:60px;z-index:200;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(1,5,11,0.98);border-top:1px solid var(--border);padding:0 12px}
-.hz-lbl{font-size:6px;letter-spacing:2.5px;text-transform:uppercase;color:var(--t3);white-space:nowrap}
+.hz-lbl{font-size:6px;letter-spacing:2.5px;text-transform:uppercase;color:var(--t2);white-space:nowrap}
 .hz-display{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--t1);min-width:220px;text-align:center}
 .hz-row{display:flex;align-items:center;gap:8px;width:340px}
-.hz-end{font-size:6.5px;color:var(--t3);white-space:nowrap;letter-spacing:1px}
+.hz-end{font-size:6.5px;color:var(--t2);white-space:nowrap;letter-spacing:1px}
 input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:2px;background:linear-gradient(90deg,var(--commit),var(--hold),var(--escalate),var(--toxic));border-radius:1px;outline:none;cursor:pointer}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--t1);border:2px solid var(--bg);box-shadow:0 0 8px rgba(255,255,255,.3);cursor:grab}
 .hz-ticks{display:flex;justify-content:space-between;width:340px;padding:0 1px}
-.tick{font-size:6px;color:var(--t3);opacity:.5}
+.tick{font-size:6.5px;color:var(--t2);opacity:.8}
 
 /* ══ OPPORTUNITY SIDEBAR (ranked list) ══ */
 .opp-panel{position:fixed;top:44px;right:210px;width:220px;bottom:60px;overflow-y:auto;scrollbar-width:none;background:rgba(1,4,9,.97);border-left:1px solid rgba(224,64,251,.2);display:none;z-index:120}
@@ -261,21 +261,21 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;heigh
 .ld-status{font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--t3)}
 
 /* ══ TOP-5 SIGNALS STRIP ══ */
-#top5{position:fixed;top:44px;left:176px;right:210px;z-index:105;background:rgba(1,5,14,.97);border-bottom:1px solid var(--border);height:0;overflow:hidden;transition:height .3s}
+#top5{position:fixed;top:44px;left:176px;right:210px;z-index:105;background:rgba(2,8,20,.99);border-bottom:1px solid rgba(255,255,255,.12);height:0;overflow:hidden;transition:height .3s}
 #top5.vis{height:52px}
 .top5-inner{display:flex;align-items:stretch;height:52px}
 .top5-label{padding:0 12px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--border);min-width:90px;flex-shrink:0}
 .top5-label-title{font-size:6px;letter-spacing:2px;text-transform:uppercase;color:var(--t3)}
 .top5-label-hz{font-size:7px;color:var(--t2);margin-top:2px;white-space:nowrap}
 .top5-cards{display:flex;flex:1;overflow:hidden}
-.top5-card{flex:1;min-width:0;padding:0 12px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--border);cursor:pointer;transition:background .15s;position:relative}
+.top5-card{flex:1;min-width:0;padding:0 12px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid rgba(255,255,255,.08);cursor:pointer;transition:background .15s;position:relative}
 .top5-card:last-child{border-right:none}
 .top5-card:hover{background:rgba(255,255,255,.02)}
-.top5-rank{position:absolute;top:8px;left:8px;font-family:'Bebas Neue',sans-serif;font-size:13px;color:rgba(255,255,255,.1);line-height:1}
-.top5-name{font-family:'IBM Plex Sans',sans-serif;font-size:9px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:16px}
-.top5-state{font-size:7px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;padding-left:16px}
-.top5-why{font-size:7px;color:var(--t3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:16px}
-.top5-toggle{position:fixed;top:44px;left:50%;transform:translateX(-50%);z-index:106;background:rgba(1,5,14,.95);border:1px solid var(--border);border-top:none;border-radius:0 0 4px 4px;padding:2px 14px;font-size:6.5px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);cursor:pointer;transition:all .2s}
+.top5-rank{position:absolute;top:8px;left:8px;font-family:'Bebas Neue',sans-serif;font-size:13px;color:rgba(255,255,255,.18);line-height:1}
+.top5-name{font-family:'IBM Plex Sans',sans-serif;font-size:10px;font-weight:700;color:#ffffff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:16px}
+.top5-state{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;padding-left:16px}
+.top5-why{font-size:7.5px;color:var(--t2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:16px}
+.top5-toggle{position:fixed;top:44px;left:50%;transform:translateX(-50%);z-index:106;background:rgba(0,20,10,.97);border:1px solid rgba(0,255,157,.4);border-top:none;border-radius:0 0 6px 6px;padding:3px 18px;font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--commit);cursor:pointer;transition:all .2s}1px solid rgba(0,255,157,.25);border-top:none;border-radius:0 0 6px 6px;padding:3px 16px;font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--commit);cursor:pointer;transition:all .2s}
 .top5-toggle:hover{color:var(--t2)}
 
 /* ══ ARC TOOLTIP ══ */
@@ -356,7 +356,7 @@ body.top5-open #globe-panel{top:132px}
 .tp-skip{font-size:7.5px;color:var(--t3);cursor:pointer;text-decoration:underline;letter-spacing:1px}
 .tp-note{font-size:7px;color:var(--t3);text-align:center;max-width:380px;line-height:1.6}
 /* Live data indicator on map */
-#map-live-bar{position:absolute;bottom:0;left:0;right:300px;background:rgba(1,5,14,.9);border-top:1px solid var(--border);padding:5px 14px;font-size:7px;color:var(--t3);letter-spacing:1px;z-index:10;display:flex;gap:16px;align-items:center}
+#map-live-bar{position:absolute;bottom:0;left:0;right:300px;background:rgba(1,5,14,.9);border-top:1px solid var(--border);padding:5px 14px;font-size:7px;color:var(--t2);letter-spacing:1px;z-index:10;display:flex;gap:16px;align-items:center}
 .mlb-item{display:flex;gap:5px;align-items:center}
 .mlb-dot{width:5px;height:5px;border-radius:50%}
 
@@ -749,27 +749,31 @@ body.top5-open #globe-panel{top:132px}
     <div style="font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-right:12px;flex-shrink:0">Feeds</div>
     <div id="feed-fema" style="display:flex;gap:5px;align-items:center;margin-right:14px;flex-shrink:0">
       <div id="fema-dot" style="width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0"></div>
-      <span style="font-size:8.5px;color:var(--t2)" id="fema-status">FEMA — standby</span>
+      <span style="font-size:8.5px;color:var(--t1)" id="fema-status">FEMA — standby</span>
     </div>
     <div id="feed-usgs" style="display:flex;gap:5px;align-items:center;margin-right:14px;flex-shrink:0">
       <div id="usgs-dot" style="width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0"></div>
-      <span style="font-size:8.5px;color:var(--t2)" id="usgs-status">USGS — standby</span>
+      <span style="font-size:8.5px;color:var(--t1)" id="usgs-status">USGS — standby</span>
     </div>
     <div id="feed-noaa" style="display:flex;gap:5px;align-items:center;margin-right:14px;flex-shrink:0">
       <div id="noaa-dot" style="width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0"></div>
-      <span style="font-size:8.5px;color:var(--t2)" id="noaa-status">NOAA — standby</span>
+      <span style="font-size:8.5px;color:var(--t1)" id="noaa-status">NOAA — standby</span>
     </div>
     <div id="feed-world" style="display:flex;gap:5px;align-items:center;margin-right:14px;flex-shrink:0">
       <div id="world-dot" style="width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0"></div>
-      <span style="font-size:8.5px;color:var(--t2)" id="world-status">Open-Meteo — standby</span>
+      <span style="font-size:8.5px;color:var(--t1)" id="world-status">Open-Meteo — standby</span>
     </div>
     <div id="feed-fred" style="display:flex;gap:5px;align-items:center;margin-right:14px;flex-shrink:0">
       <div id="fred-dot" style="width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0"></div>
-      <span style="font-size:8.5px;color:var(--t2)" id="fred-status">FRED — standby</span>
+      <span style="font-size:8.5px;color:var(--t1)" id="fred-status">FRED — standby</span>
     </div>
     <div id="feed-eia" style="display:flex;gap:5px;align-items:center;margin-right:14px;flex-shrink:0">
       <div id="eia-dot" style="width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0"></div>
-      <span style="font-size:8.5px;color:var(--t2)" id="eia-status">EIA Energy — standby</span>
+      <span style="font-size:8.5px;color:var(--t1)" id="eia-status">EIA Energy — standby</span>
+    </div>
+    <div id="feed-space" style="display:flex;gap:5px;align-items:center;margin-right:14px;flex-shrink:0">
+      <div id="space-dot" style="width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0"></div>
+      <span style="font-size:8.5px;color:var(--t1)" id="space-status">Space — standby</span>
     </div>
     <div style="margin-left:auto;font-size:7.5px;color:var(--t3);flex-shrink:0;padding-left:8px" id="live-lastupdate">Not loaded</div>
     <button onclick="fetchAllLiveData()" style="margin-left:8px;padding:3px 10px;border:1px solid var(--border2);background:none;color:var(--t2);font-family:'IBM Plex Mono',monospace;font-size:7.5px;letter-spacing:1px;border-radius:3px;cursor:pointer;flex-shrink:0">↻</button>
@@ -1212,7 +1216,74 @@ const RE_NODES=[
 {n:'San Antonio Metro',lat:29.42,lng:-98.49,layer:'re_metro',th:.7,ph:5.2,ent:.26,coh:.78,ev:true,ts:[0,0,0,0,0,0],d:'Military + tech. Cheapest major Texas metro. Highest yield.',why:['5 military installations: $40B annual economic impact — government stability floor','Toyota + Valero + H-E-B HQ: Fortune 500 diversification preventing over-concentration','SA median $275K — 30% below Austin — with same Texas growth tailwinds and lower taxes'],reData:{medPrice:'$278K',priceYoY:'+5.6%',dom:24,inventory:'2.1mo',affordIdx:70,insuranceRisk:'LOW',rentYield:'7.2%',signal:'COMMIT — Highest absolute yield in major Texas market'},oppLogic:'San Antonio is 5 years behind Austin on the Texas growth curve. Military anchor prevents crash. $275K median with 7%+ rental yields and zero income tax.',isLocal:true,localLevel:2},
 ];
 
-const ALL_NODES=[...NODES,...US_LOCAL_NODES,...RE_NODES];
+// ALL_NODES defined below after SPACE_NODES
+
+// ── SPACE NODES ──
+// Positioned above Earth — rendered as special markers on the globe
+// lat/lng represent substellar point or geopolitical anchor location
+const SPACE_NODES = [
+  { n:'ISS', layer:'space', lat:51.6, lng:0, entropy:0.18,
+    why:['Orbital altitude 408km — crewed international research platform',
+         'US-Russia-China cooperation under structural pressure',
+         'Post-2030 deorbit plan creates program continuity uncertainty'],
+    note:'International Space Station — real-time position via live feed' },
+
+  { n:'Moon', layer:'space', lat:0, lng:0, entropy:0.35,
+    why:['Artemis III crewed landing targeting 2027 — lunar south pole',
+         "Chang'e 7 targeting 2026 — same south pole water ice deposit",
+         'First nation to establish permanent lunar presence controls helium-3 and water ice'],
+    note:'Lunar competition — US vs China south pole resource race' },
+
+  { n:'Mars', layer:'space', lat:0, lng:180, entropy:0.55,
+    why:['SpaceX Starship Mars mission targeting 2026 — first uncrewed landing',
+         'NASA-SpaceX architecture dependency creates single point of failure',
+         'Dust storm season 2026 creates mission window uncertainty'],
+    note:'Mars colonization race — SpaceX vs geopolitical context' },
+
+  { n:'Solar Activity', layer:'space', lat:0, lng:90, entropy:0.28,
+    why:['Solar Cycle 25 approaching maximum 2025-2026',
+         'X-class flares disrupt GPS, satellite comms, power grids',
+         'Geomagnetic storms elevate satellite drag — orbital decay accelerates'],
+    note:'Solar Cycle 25 peak — space weather risk elevated' },
+
+  { n:'Starlink', layer:'space', lat:53, lng:-100, entropy:0.32,
+    why:['6,000+ satellites operational — largest constellation in history',
+         'Ukrainian battlefield dependency creates geopolitical vulnerability',
+         'Kessler syndrome risk rising with debris density in LEO'],
+    note:'Starlink LEO constellation — military/civilian dual-use tension' },
+
+  { n:'GPS Constellation', layer:'space', lat:55, lng:20, entropy:0.22,
+    why:['31 operational GPS satellites — US military and civilian backbone',
+         'Russia GLONASS + China BeiDou creating multi-constellation competition',
+         'Solar flare disruption risk elevated during Cycle 25 peak'],
+    note:'GPS/GNSS global navigation — solar weather vulnerability' },
+
+  { n:'Artemis Program', layer:'space', lat:28.5, lng:-80.5, entropy:0.52,
+    why:['Artemis III crewed lunar landing slipping from 2026 to 2027+',
+         "China Chang'e program accelerating — competitive pressure on timeline",
+         'Budget uncertainty under new administration creates program risk'],
+    note:'NASA Artemis — crewed return to Moon under competitive pressure' },
+
+  { n:'Asteroid Belt', layer:'space', lat:-5, lng:135, entropy:0.18,
+    why:['Near-Earth asteroid mining commercially viable by 2030+',
+         'Psyche mission orbiting metal-rich asteroid — $10 quintillion resource estimate',
+         'No legal framework for extraterrestrial resource ownership'],
+    note:'Space mining — asteroid resource rights undefined' },
+
+  { n:'Space Debris', layer:'space', lat:0, lng:-45, entropy:0.45,
+    why:['27,000+ tracked debris objects in orbit',
+         'Russian ASAT test 2021 debris field still active',
+         'Kessler cascade risk threshold approaching in LEO bands'],
+    note:'Orbital debris — Kessler cascade risk in low Earth orbit' },
+
+  { n:'Deep Space Comms', layer:'space', lat:35, lng:-116, entropy:0.25,
+    why:['NASA Deep Space Network — Goldstone, Madrid, Canberra',
+         'Mars/Moon mission communication latency creates autonomous operation dependency',
+         'Solar conjunction blackout periods create mission vulnerability windows'],
+    note:'Deep Space Network — solar conjunction and bandwidth constraints' },
+];
+
+const ALL_NODES=[...NODES,...US_LOCAL_NODES,...RE_NODES,...SPACE_NODES];
 
 // Zoom level thresholds (camera Z distance)
 const ZOOM_LEVELS={global:18,us:13,state:10,county:7.5,zip:5.5};
@@ -2626,6 +2697,74 @@ async function fetchEIA(){
   }
 }
 
+// ── Space Intelligence Feed ──
+async function fetchSpace(){
+  const dot=document.getElementById('space-dot');
+  const status=document.getElementById('space-status');
+  if(dot) dot.style.background='var(--hold)';
+  if(status) status.textContent='Space — loading…';
+  if(!ON_VERCEL){
+    if(status) status.textContent='Space — deploy to activate';
+    return null;
+  }
+  try{
+    const res=await fetch('/api/space?series=all',{signal:AbortSignal.timeout(12000)});
+    if(!res.ok) throw new Error(`Space API ${res.status}`);
+    const data=await res.json();
+    if(!data.ok) throw new Error(data.error||'Space API error');
+
+    // Apply node entropy mods from space signals
+    Object.entries(data.nodeMods||{}).forEach(([nodeName,mod])=>{
+      if(mod.entDelta>0){
+        LIVE_MODS[nodeName]={
+          ...(LIVE_MODS[nodeName]||{}),
+          entDelta:Math.min(0.90,(LIVE_MODS[nodeName]?.entDelta||0)+mod.entDelta),
+          liveReason:`Space: ${mod.reason}`,
+        };
+      }
+    });
+
+    // Push space events to live feed
+    (data.events||[]).forEach(ev=>{
+      const icon=ev.type==='extreme'?'🚨':ev.type==='notable'?'🛸':'🌐';
+      addLiveEvent(`${icon} ${ev.message}`,'var(--opp)');
+    });
+
+    // Update ISS position on globe if we have coordinates
+    const iss=data.results?.iss;
+    if(iss?.nerva?.position){
+      // Update the ISS node position in SPACE_NODES dynamically
+      const issNode=ALL_NODES.find(n=>n.n==='ISS');
+      if(issNode){
+        issNode.lat=iss.nerva.position.lat;
+        issNode.lng=iss.nerva.position.lng;
+      }
+    }
+
+    // Build status line
+    const parts=[];
+    const solar=data.results?.solar;
+    const moon=data.results?.moon;
+    const neo=data.results?.asteroids;
+    if(solar) parts.push(`Solar: ${solar.maxFlareClass||'B'}-class · Kp ${solar.geomagnetic?.kpIndex||0}`);
+    if(moon) parts.push(`Moon: ${moon.phase?.name||'?'} ${moon.phase?.illumination||0}%`);
+    if(neo) parts.push(`NEOs: ${neo.count||0} (${neo.hazardousCount||0} hazardous)`);
+    if(iss) parts.push(`ISS: ${iss.position?.altitude||0}km`);
+
+    if(dot) dot.style.background='var(--opp)'; // purple for space
+    if(status) status.textContent=`Space — ${parts.join(' · ')}`;
+
+    // Push top space event
+    if(parts.length) addLiveEvent(`🛸 ${parts.join(' · ')}`, 'var(--opp)');
+
+    return data;
+  }catch(e){
+    if(dot) dot.style.background='var(--escalate)';
+    if(status) status.textContent=`Space — ${e.message}`;
+    return null;
+  }
+}
+
 async function fetchCensusAPI() {
   return null; // wiring later — FRED first
   if (!ON_VERCEL) return null;
@@ -2713,6 +2852,7 @@ async function fetchAllLiveData(){
     fetchOpenMeteo(),   // Direct: temperature anomaly
     fetchFRED(),        // API: FRED economic data
     fetchEIA(),         // API: EIA energy prices (WTI, Brent, gas)
+    fetchSpace(),       // API: ISS, solar weather, asteroids, moon
   ]);
 
   liveDataLoaded=true;
