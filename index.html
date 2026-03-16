@@ -600,35 +600,39 @@ body.top5-open #globe-panel{top:132px}
 </div>
 
 <!-- LIVE DATA STATUS BAR -->
-<div id="live-bar" style="position:fixed;bottom:60px;left:176px;right:210px;z-index:200;height:0;overflow:hidden;transition:height .3s;background:rgba(1,5,14,.97);border-top:1px solid var(--border)">
-  <div style="padding:8px 16px;display:flex;gap:20px;align-items:center;flex-wrap:wrap">
-    <div style="font-size:6.5px;letter-spacing:2px;text-transform:uppercase;color:var(--t3)">Live Feeds</div>
+<div id="live-bar" style="position:fixed;bottom:60px;left:176px;right:210px;z-index:200;height:0;overflow:hidden;transition:height .3s;background:rgba(1,5,14,.97);border-top:1px solid var(--border2)">
+  <div style="padding:9px 16px;display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--t2);font-weight:600">Live Feeds</div>
     <div id="feed-fema" style="display:flex;gap:6px;align-items:center">
-      <div id="fema-dot" style="width:6px;height:6px;border-radius:50%;background:var(--t3)"></div>
-      <span style="font-size:7.5px;color:var(--t3)" id="fema-status">FEMA NFIP — standby</span>
+      <div id="fema-dot" style="width:7px;height:7px;border-radius:50%;background:var(--t3)"></div>
+      <span style="font-size:9px;color:var(--t2)" id="fema-status">FEMA NFIP — standby</span>
     </div>
     <div id="feed-usgs" style="display:flex;gap:6px;align-items:center">
-      <div id="usgs-dot" style="width:6px;height:6px;border-radius:50%;background:var(--t3)"></div>
-      <span style="font-size:7.5px;color:var(--t3)" id="usgs-status">USGS Seismic — standby</span>
+      <div id="usgs-dot" style="width:7px;height:7px;border-radius:50%;background:var(--t3)"></div>
+      <span style="font-size:9px;color:var(--t2)" id="usgs-status">USGS Seismic — standby</span>
     </div>
     <div id="feed-noaa" style="display:flex;gap:6px;align-items:center">
-      <div id="noaa-dot" style="width:6px;height:6px;border-radius:50%;background:var(--t3)"></div>
-      <span style="font-size:7.5px;color:var(--t3)" id="noaa-status">NOAA Alerts — standby</span>
+      <div id="noaa-dot" style="width:7px;height:7px;border-radius:50%;background:var(--t3)"></div>
+      <span style="font-size:9px;color:var(--t2)" id="noaa-status">NOAA Alerts — standby</span>
     </div>
     <div id="feed-world" style="display:flex;gap:6px;align-items:center">
-      <div id="world-dot" style="width:6px;height:6px;border-radius:50%;background:var(--t3)"></div>
-      <span style="font-size:7.5px;color:var(--t3)" id="world-status">Open Meteo Climate — standby</span>
+      <div id="world-dot" style="width:7px;height:7px;border-radius:50%;background:var(--t3)"></div>
+      <span style="font-size:9px;color:var(--t2)" id="world-status">Open-Meteo — standby</span>
     </div>
-    <div style="margin-left:auto;font-size:7px;color:var(--t3)" id="live-lastupdate">Not loaded</div>
-    <button onclick="fetchAllLiveData()" style="padding:3px 10px;border:1px solid var(--border2);background:none;color:var(--t2);font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:1px;border-radius:3px;cursor:pointer">↻ Refresh</button>
+    <div id="feed-fred" style="display:flex;gap:6px;align-items:center">
+      <div id="fred-dot" style="width:7px;height:7px;border-radius:50%;background:var(--t3)"></div>
+      <span style="font-size:9px;color:var(--t2)" id="fred-status">FRED — standby</span>
+    </div>
+    <div style="margin-left:auto;font-size:8px;color:var(--t3)" id="live-lastupdate">Not loaded</div>
+    <button onclick="fetchAllLiveData()" style="padding:4px 12px;border:1px solid var(--border2);background:none;color:var(--t2);font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;border-radius:3px;cursor:pointer">↻ Refresh</button>
   </div>
 </div>
 
 <!-- LIVE EVENTS FEED PANEL (right side, below node list) -->
 <div id="live-feed-panel" style="position:fixed;top:44px;right:0;width:210px;bottom:60px;overflow-y:auto;scrollbar-width:none;z-index:99;display:none">
-  <div style="padding:7px 10px;border-bottom:1px solid var(--border);background:rgba(1,5,14,.98);position:sticky;top:0;z-index:2">
-    <div style="font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--t3)">Live Events</div>
-    <div style="font-size:6.5px;color:var(--t3);margin-top:2px" id="live-event-count">0 events</div>
+  <div style="padding:8px 12px;border-bottom:1px solid var(--border);background:rgba(1,5,14,.98);position:sticky;top:0;z-index:2">
+    <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--t2);font-weight:600">Live Events</div>
+    <div style="font-size:8px;color:var(--t3);margin-top:2px" id="live-event-count">0 events</div>
   </div>
   <div id="live-events-list"></div>
 </div>
@@ -2251,7 +2255,16 @@ async function callAPI(endpoint, params = {}) {
 }
 
 async function fetchFRED() {
-  if (!ON_VERCEL) return null;
+  if (!ON_VERCEL) {
+    const el=document.getElementById('fred-status');
+    if(el)el.textContent='FRED — deploy to Vercel to activate';
+    return null;
+  }
+  // Set loading state
+  const dot=document.getElementById('fred-dot');
+  const status=document.getElementById('fred-status');
+  if(dot)dot.style.background='var(--hold)';
+  if(status)status.textContent='FRED — loading…';
   try {
     // Fetch 4 key series in parallel
     const [mortgage, fedFunds, cpi, caseshiller] = await Promise.allSettled([
@@ -2298,10 +2311,26 @@ async function fetchFRED() {
       );
     }
 
+    // Update FRED status in live bar
+    if (mortgage.status === 'fulfilled' && mortgage.value?.ok) {
+      const m = mortgage.value;
+      const arrow = m.change.direction === 'up' ? '↑' : m.change.direction === 'down' ? '↓' : '→';
+      const dot=document.getElementById('fred-dot');
+      const status=document.getElementById('fred-status');
+      if(dot)dot.style.background='var(--commit)';
+      if(status)status.textContent=`FRED — ${m.latest.formatted} mortgage ${arrow} · Fed ${fedFunds.value?.latest?.formatted||'?'}`;
+      updateFeedStatus('fema', 'var(--commit)',
+        `FRED live — ${m.latest.formatted} mortgage ${arrow} · Fed ${fedFunds.value?.latest?.formatted || '?'}`
+      );
+    }
+
     return { mortgage: mortgage.value, fedFunds: fedFunds.value, cpi: cpi.value, caseshiller: caseshiller.value };
   } catch (e) {
     console.warn('fetchFRED:', e.message);
-    updateFeedStatus('fema', 'var(--escalate)', 'FRED — error, check key');
+    const dot=document.getElementById('fred-dot');
+    const status=document.getElementById('fred-status');
+    if(dot)dot.style.background='var(--escalate)';
+    if(status)status.textContent='FRED — check API key in Vercel';
     return null;
   }
 }
@@ -2371,7 +2400,7 @@ function addLiveEvent(msg, color = 'var(--t2)') {
   if (!feed) return;
   const item = document.createElement('div');
   item.className = 'lev-item';
-  item.innerHTML = `<span style="color:${color};font-size:8px">${msg}</span><span class="lev-time">${new Date().toLocaleTimeString()}</span>`;
+  item.innerHTML = `<span style="color:${color};font-size:10px;line-height:1.5">${msg}</span><span class="lev-time" style="font-size:9px;color:var(--t3);display:block;margin-top:1px">${new Date().toLocaleTimeString()}</span>`;
   feed.prepend(item);
 }
 
