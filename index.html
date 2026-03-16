@@ -4095,6 +4095,7 @@ function initMobileDashboard() {
 function getMobileCSS() {
   return `<style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;height:auto;min-height:100dvh}
 .m-nav{position:sticky;top:0;z-index:100;background:rgba(1,5,14,.98);border-bottom:1px solid rgba(255,255,255,.08);padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
 .m-brand{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:#00ff9d}
 .m-brand-sub{font-size:8px;letter-spacing:2px;color:#4a6080;font-family:'IBM Plex Mono',monospace;margin-top:-2px}
@@ -4118,7 +4119,7 @@ function getMobileCSS() {
 .m-search-btn{padding:10px 16px;background:rgba(0,255,157,.06);border:1px solid rgba(0,255,157,.3);color:#00ff9d;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;border-radius:4px;cursor:pointer}
 .m-corp-row{display:flex;gap:8px}
 .m-corp-sel{flex:1;padding:10px 10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#e8edf5;font-family:'IBM Plex Mono',monospace;font-size:11px;border-radius:4px;outline:none}
-.m-result{margin:10px 16px 0;background:#060d1a;border:1px solid rgba(255,255,255,.08);border-radius:6px;overflow:hidden;display:none}
+.m-result{margin:10px 16px 0;background:#060d1a;border:1px solid rgba(255,255,255,.08);border-radius:6px;overflow:hidden;display:none;max-height:70dvh;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .m-result.vis{display:block}
 .m-result-head{padding:12px 14px 0;display:flex;justify-content:space-between;align-items:start}
 .m-result-name{font-size:15px;font-weight:600;color:#e8edf5}
@@ -4140,7 +4141,7 @@ function getMobileCSS() {
 .m-section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .m-section-title{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#4a6080}
 .m-section-count{font-family:'Bebas Neue',sans-serif;font-size:14px;color:#4a6080}
-.m-node-list{display:flex;flex-direction:column;gap:4px;padding-bottom:8px}
+.m-node-list{display:flex;flex-direction:column;gap:4px;padding-bottom:80px}
 .m-node{display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(6,13,26,.8);border:1px solid rgba(255,255,255,.05);border-radius:5px;cursor:pointer;transition:background .15s;active:background:rgba(255,255,255,.04)}
 .m-node-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .m-node-body{flex:1;min-width:0}
@@ -4159,9 +4160,9 @@ function getMobileCSS() {
 .m-footer-brand{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;color:#4a6080}
 .m-footer-links{display:flex;gap:20px;justify-content:center;margin-top:8px}
 .m-footer-link{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1.5px;color:#4a6080;text-decoration:none}
-.m-backdrop{position:fixed;inset:0;z-index:199;background:rgba(0,0,0,.6);display:none}
+.m-backdrop{position:fixed;inset:0;z-index:199;background:rgba(0,0,0,.6);display:none;touch-action:none}
 .m-backdrop.show{display:block}
-.m-drawer{position:fixed;left:0;right:0;bottom:0;z-index:200;background:#060d1a;border-top:1px solid rgba(255,255,255,.12);border-radius:16px 16px 0 0;transform:translateY(100%);transition:transform .28s cubic-bezier(.32,.72,0,1);max-height:72dvh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.m-drawer{position:fixed;left:0;right:0;bottom:0;z-index:200;background:#060d1a;border-top:1px solid rgba(255,255,255,.12);border-radius:16px 16px 0 0;transform:translateY(100%);transition:transform .28s cubic-bezier(.32,.72,0,1);max-height:72dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .m-drawer.open{transform:translateY(0)}
 .m-drawer-handle{width:40px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:12px auto 0}
 .m-drawer-close{position:absolute;top:14px;right:16px;background:none;border:1px solid rgba(255,255,255,.1);color:#4a6080;width:28px;height:28px;border-radius:4px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center}
@@ -4405,13 +4406,11 @@ function openDrawer(node){
 
   document.getElementById('m-drawer').classList.add('open');
   document.getElementById('m-backdrop').classList.add('show');
-  document.body.style.overflow='hidden';
 }
 
 function closeDrawer(){
   document.getElementById('m-drawer').classList.remove('open');
   document.getElementById('m-backdrop').classList.remove('show');
-  document.body.style.overflow='';
 }
 
 async function mobileSearchZIP(){
@@ -4522,3 +4521,4 @@ function closeMobileResult(){
 <div id="dp-backdrop" onclick="closeDetail()" style="display:none;position:fixed;inset:0;z-index:149;background:rgba(0,0,0,.5);-webkit-tap-highlight-color:transparent"></div>
 </body>
 </html>
+
