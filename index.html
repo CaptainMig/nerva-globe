@@ -361,42 +361,84 @@ body.top5-open #globe-panel{top:132px}
 
 /* ══ MOBILE RESPONSIVE ══ */
 @media (max-width: 900px) {
+  /* ── Hide desktop side panels ── */
   .lp{display:none!important}
   .rp{display:none!important}
   .opp-panel{display:none!important}
   #live-feed-panel{display:none!important}
-  #cv{left:0!important;right:0!important;top:80px!important;width:100vw!important;height:calc(100dvh - 140px)!important}
-  #globe-panel{left:0!important;right:0!important;top:80px!important}
-  #map-panel{left:0!important;right:0!important;top:80px!important}
-  #tab-bar{left:0!important;right:0!important}
-  #top5{left:0!important;right:0!important}
-  #live-bar{left:0!important;right:0!important}
-  .bot{left:0!important;right:0!important}
-  #fly-controls{display:none!important}
   #btn-screenshot{display:none!important}
-  #top5-toggle{left:50%;transform:translateX(-50%)}
+  #fly-controls{display:none!important}
+  .topbar-sub{display:none!important}
+
+  /* ── Topbar: compact, show only key stats ── */
+  .tb{padding:0 8px;height:44px}
+  .topbar-brand{font-size:14px;letter-spacing:2px}
   .macro-item{display:none!important}
   .macro-item:nth-child(1),.macro-item:nth-child(2),.macro-item:nth-child(3){display:flex!important}
-  .tb-btn-grp{gap:3px}
-  .tb-btn{padding:3px 6px;font-size:6px}
-  .topbar-brand{font-size:13px;letter-spacing:2px}
-  .topbar-sub{display:none!important}
-  .dp{left:0!important;right:0!important;width:100%!important;max-width:100vw!important;top:80px!important}
-  #map-detail{width:100%!important;top:auto!important;bottom:0!important;height:55vh!important}
-  .hz-row{width:90vw!important}
-  .hz-row input[type=range]{flex:1}
-  .hz-ticks{width:90vw!important}
+  .tb-btn-grp{gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;max-width:45vw}
+  .tb-btn-grp::-webkit-scrollbar{display:none}
+  .tb-btn{padding:3px 7px;font-size:7px;letter-spacing:.5px;white-space:nowrap;flex-shrink:0}
+
+  /* ── Tab bar full width ── */
+  #tab-bar{left:0!important;right:0!important}
+
+  /* ── Globe canvas: full width, proper height ── */
+  #cv{left:0!important;right:0!important;top:80px!important;width:100vw!important;height:calc(100dvh - 80px - 60px)!important}
+  #globe-panel{left:0!important;right:0!important;top:80px!important;bottom:60px!important}
+  #map-panel{left:0!important;right:0!important;top:80px!important;bottom:60px!important}
+
+  /* ── Top 5 strip ── */
+  #top5{left:0!important;right:0!important}
+  #top5-toggle{left:50%!important;transform:translateX(-50%)!important}
+
+  /* ── Live bar ── */
+  #live-bar{left:0!important;right:0!important}
+
+  /* ── Bottom bar: full width, bigger touch target ── */
+  .bot{left:0!important;right:0!important;height:60px;padding:0 12px 8px}
+  .hz-row{width:88vw!important}
+  .hz-row input[type=range]{flex:1;height:28px}
+  .hz-ticks{width:88vw!important}
+  .hz-lbl{display:none}
+
+  /* ── Detail panel: full screen overlay ── */
+  .dp{left:0!important;right:0!important;width:100%!important;max-width:100vw!important;top:80px!important;bottom:60px!important;overflow-y:auto}
+  #map-detail{width:100%!important;top:auto!important;bottom:60px!important;height:50dvh!important;border-top:1px solid var(--border2)}
+
+  /* ── Node legend: bottom left, smaller ── */
+  #node-legend{bottom:68px!important;left:8px!important;right:auto!important;max-width:160px;font-size:7px}
+  .node-leg-row{font-size:7px}
+
+  /* ── ZIP search bar ── */
+  #zip-search-bar{right:0!important;padding:6px 8px;gap:6px}
+  #zip-input{font-size:11px}
+  #corp-metro,#corp-type{font-size:10px}
+  #zip-btn{padding:6px 12px;font-size:12px}
+  #zip-result{width:calc(100vw - 16px)!important;left:8px!important}
+
+  /* ── Search mode buttons ── */
+  #search-mode-res,#search-mode-corp{font-size:7px;padding:4px 8px}
 }
+
 @media (max-width: 480px) {
-  .ld-logo{font-size:32px;letter-spacing:5px}
+  /* ── Extra small screens (iPhone SE, older Android) ── */
+  .ld-logo{font-size:30px;letter-spacing:4px}
   #top5.vis{height:44px}
-  .top5-cards{overflow-x:auto}
-  .top5-card{min-width:130px;flex-shrink:0}
+  .top5-cards{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .top5-card{min-width:120px;flex-shrink:0}
   .top5-why{display:none!important}
   .intro-cards{flex-direction:column;gap:8px}
   .intro-card{max-width:100%!important}
+
+  /* On tiny screens hide all toolbar buttons except Live Data + Rotate */
   .tb-btn{display:none!important}
-  #b-live,#b-rot{display:flex!important}
+  #b-live,#b-rot{display:inline-flex!important}
+
+  /* Topbar brand even smaller */
+  .topbar-brand{font-size:12px;letter-spacing:1px}
+
+  /* Make globe fill better on notched phones */
+  #cv{top:80px!important;height:calc(100dvh - 80px - 60px)!important}
 }
 
 /* ══ ZIP SEARCH ══ */
@@ -422,12 +464,20 @@ body.top5-open #globe-panel{top:132px}
 .zr-why{font-size:8px;color:var(--t2);line-height:1.5;font-family:'IBM Plex Sans',sans-serif}
 .zr-why-item{padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}
 .zr-close{float:right;background:none;border:1px solid var(--border);color:var(--t3);width:20px;height:20px;border-radius:3px;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;margin-top:2px}
+
+/* ── MOBILE NODE PANEL ── */
+#mob-nodes-btn{display:none;position:fixed;bottom:68px;right:8px;z-index:300;background:rgba(1,5,14,.97);border:1px solid var(--border2);color:var(--t2);padding:7px 12px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.5)}
+#mob-nodes-panel{display:none;position:fixed;left:0;right:0;bottom:60px;height:55dvh;background:rgba(1,5,14,.99);border-top:1px solid var(--border2);z-index:400;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#mob-nodes-panel .rp-inner{padding:8px 0}
+@media(max-width:900px){#mob-nodes-btn{display:block}}
 </style>
 </head>
 <body>
 
 <!-- MOBILE LAYER MENU TOGGLE -->
-<button id="mob-menu" onclick="toggleMobileMenu()" style="display:none;position:fixed;top:48px;left:8px;z-index:300;background:rgba(1,5,14,.95);border:1px solid var(--border2);color:var(--t2);padding:6px 10px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px">☰ Layers</button>
+<button id="mob-menu" onclick="toggleMobileMenu()" style="display:none;position:fixed;top:48px;left:8px;z-index:300;background:rgba(1,5,14,.97);border:1px solid var(--border2);color:var(--commit);padding:7px 12px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;box-shadow:0 2px 12px rgba(0,0,0,.5)">☰ Layers</button>
+<button id="mob-nodes-btn" onclick="toggleMobileNodes()">⊛ Nodes</button>
+<div id="mob-nodes-panel"></div>
 
 <!-- ══ LOADING OVERLAY ══ -->
 <div id="loading">
@@ -3469,28 +3519,59 @@ Object.assign(SEM,{
 
 // Mobile menu toggle
 function toggleMobileMenu(){
-  const lp=document.querySelector('.lp');
-  if(!lp)return;
-  const open=lp.style.display==='block';
-  lp.style.display=open?'none':'block';
-  lp.style.position='fixed';
-  lp.style.top='80px';
-  lp.style.left='0';
-  lp.style.width='80vw';
-  lp.style.maxWidth='300px';
-  lp.style.height='calc(100vh - 80px)';
-  lp.style.zIndex='500';
-  lp.style.background='rgba(1,5,14,.98)';
-  lp.style.overflowY='auto';
-  document.getElementById('mob-menu').textContent=open?'☰ Layers':'✕ Close';
+  const lp = document.querySelector('.lp');
+  if (!lp) return;
+  const isOpen = lp.style.display === 'block';
+
+  if (isOpen) {
+    // Close
+    lp.style.display = 'none';
+    lp.style.position = '';
+    const backdrop = document.getElementById('mob-backdrop');
+    if (backdrop) backdrop.remove();
+    document.getElementById('mob-menu').textContent = '☰ Layers';
+    document.getElementById('mob-menu').style.color = 'var(--commit)';
+  } else {
+    // Open — overlay the left panel
+    lp.style.cssText = 'display:block!important;position:fixed;top:80px;left:0;width:82vw;max-width:300px;height:calc(100dvh - 80px - 60px);z-index:500;background:rgba(1,5,14,.99);overflow-y:auto;-webkit-overflow-scrolling:touch;border-right:1px solid rgba(255,255,255,.12);box-shadow:4px 0 24px rgba(0,0,0,.7)';
+
+    // Add tap-to-close backdrop
+    const bd = document.createElement('div');
+    bd.id = 'mob-backdrop';
+    bd.style.cssText = 'position:fixed;inset:0;top:80px;bottom:60px;z-index:499;background:rgba(0,0,0,.5);-webkit-tap-highlight-color:transparent';
+    bd.addEventListener('click', toggleMobileMenu);
+    document.body.appendChild(bd);
+
+    document.getElementById('mob-menu').textContent = '✕ Close';
+    document.getElementById('mob-menu').style.color = 'var(--toxic)';
+  }
 }
 
 // Show mobile menu button on small screens
 function checkMobile(){
-  const btn=document.getElementById('mob-menu');
-  if(btn)btn.style.display=window.innerWidth<=900?'block':'none';
+  const btn = document.getElementById('mob-menu');
+  if (btn) btn.style.display = window.innerWidth <= 900 ? 'block' : 'none';
+  const nb = document.getElementById('mob-nodes-btn');
+  if (nb) nb.style.display = window.innerWidth <= 900 ? 'block' : 'none';
 }
-window.addEventListener('resize',checkMobile);
+
+function toggleMobileNodes(){
+  const panel = document.getElementById('mob-nodes-panel');
+  const btn = document.getElementById('mob-nodes-btn');
+  if (!panel) return;
+  const isOpen = panel.style.display === 'block';
+  if (isOpen) {
+    panel.style.display = 'none';
+    if (btn) btn.textContent = '⊛ Nodes';
+  } else {
+    // Clone the right panel node list into mobile panel
+    const rp = document.querySelector('.rp');
+    if (rp) panel.innerHTML = `<div style="padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--t2);text-transform:uppercase">Active Nodes</span><button onclick="toggleMobileNodes()" style="background:none;border:1px solid rgba(255,255,255,.1);color:var(--t3);padding:3px 8px;border-radius:3px;font-family:'IBM Plex Mono',monospace;font-size:8px;cursor:pointer">✕ Close</button></div>` + rp.innerHTML;
+    panel.style.display = 'block';
+    if (btn) btn.textContent = '✕ Close';
+  }
+}
+window.addEventListener('resize', checkMobile);
 checkMobile();
 
 // ════════════════════════════════════════════════════════════════
