@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>NERVA Globe — Signal Intelligence Surface</title>
 <meta name="description" content="A quantum-inspired decision engine that reads where the world is coherent, where it is unstable, and where acting on the signal would be a mistake.">
 <meta property="og:title" content="NERVA Globe — Signal Intelligence Surface">
@@ -189,7 +190,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;heigh
 .tt-click{font-size:6.5px;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-top:4px;text-align:center;opacity:.7}
 
 /* ══ ZOOM INDICATOR ══ */
-#zoom-ind{position:fixed;bottom:68px;left:50%;transform:translateX(-50%);z-index:200;display:flex;align-items:center;gap:6px;background:rgba(1,5,14,0.92);border:1px solid var(--border);border-radius:4px;padding:4px 14px;pointer-events:none}
+#zoom-ind{position:fixed;bottom:68px;left:50%;transform:translateX(-50%);z-index:200;display:none}
 .zi-label{font-size:6px;letter-spacing:2px;text-transform:uppercase;color:var(--t3)}
 .zi-steps{display:flex;gap:3px;align-items:center}
 .zi-step{padding:2px 8px;border-radius:2px;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;border:1px solid transparent;color:var(--t3);transition:all .3s}
@@ -357,9 +358,57 @@ body.top5-open #globe-panel{top:132px}
 #map-live-bar{position:absolute;bottom:0;left:0;right:300px;background:rgba(1,5,14,.9);border-top:1px solid var(--border);padding:5px 14px;font-size:7px;color:var(--t3);letter-spacing:1px;z-index:10;display:flex;gap:16px;align-items:center}
 .mlb-item{display:flex;gap:5px;align-items:center}
 .mlb-dot{width:5px;height:5px;border-radius:50%}
+
+/* ══ MOBILE RESPONSIVE ══ */
+@media (max-width: 900px) {
+  /* Hide side panels — globe goes full width */
+  .lp{display:none!important}
+  .rp{display:none!important}
+  .opp-panel{display:none!important}
+  #live-feed-panel{display:none!important}
+
+  /* Canvas + panels span full width */
+  #cv{left:0!important;right:0!important;top:80px!important;width:100vw!important}
+  #globe-panel{left:0!important;right:0!important}
+  #map-panel{left:0!important;right:0!important}
+  #tab-bar{left:0!important;right:0!important}
+  #top5{left:0!important;right:0!important}
+  #live-bar{left:0!important;right:0!important}
+  #fly-controls{left:8px!important}
+  #btn-screenshot{display:none}
+
+  /* Topbar — hide most macro stats, keep key ones */
+  .macro-item{display:none!important}
+  .macro-item:nth-child(1),.macro-item:nth-child(2),.macro-item:nth-child(3){display:flex!important}
+  .tb-btn-grp{gap:4px}
+  .tb-btn{padding:3px 7px;font-size:6px;letter-spacing:1px}
+  .topbar-brand{font-size:14px;letter-spacing:3px}
+  .topbar-sub{display:none}
+
+  /* Detail panel full width */
+  .dp{left:0!important;right:0!important;width:100%!important;max-width:100vw}
+  #map-detail{width:100%!important;top:auto;bottom:0;height:55vh;border-top:1px solid var(--border2)}
+
+  /* Time slider readable on mobile */
+  .hz-row input[type=range]{height:24px}
+  #bottom-bar{padding:8px 12px 20px}
+}
+
+@media (max-width: 480px) {
+  .ld-logo{font-size:36px;letter-spacing:6px}
+  #top5.vis{height:44px}
+  .top5-cards{overflow-x:auto}
+  .top5-card{min-width:140px;flex-shrink:0}
+  .top5-why{display:none}
+  .intro-cards{flex-direction:column;gap:8px}
+  .intro-card{max-width:100%}
+}
 </style>
 </head>
 <body>
+
+<!-- MOBILE LAYER MENU TOGGLE -->
+<button id="mob-menu" onclick="toggleMobileMenu()" style="display:none;position:fixed;top:48px;left:8px;z-index:300;background:rgba(1,5,14,.95);border:1px solid var(--border2);color:var(--t2);padding:6px 10px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px">☰ Layers</button>
 
 <!-- ══ LOADING OVERLAY ══ -->
 <div id="loading">
@@ -706,18 +755,19 @@ body.top5-open #globe-panel{top:132px}
 
 <!-- ZOOM INDICATOR -->
 <div id="zoom-ind">
-  <span class="zi-label">View</span>
-  <div class="zi-steps">
-    <span class="zi-step act" id="zi-global" onclick="flyToLevel('global')" style="cursor:pointer">Global</span>
-    <span class="zi-div">›</span>
-    <span class="zi-step" id="zi-us" onclick="flyToLevel('us')" style="cursor:pointer">U.S. Region</span>
-    <span class="zi-div">›</span>
-    <span class="zi-step" id="zi-state" onclick="flyToLevel('state')" style="cursor:pointer">State</span>
-    <span class="zi-div">›</span>
-    <span class="zi-step" id="zi-county" onclick="flyToLevel('county')" style="cursor:pointer">County</span>
-    <span class="zi-div">›</span>
-    <span class="zi-step" id="zi-zip" onclick="flyToLevel('zip')" style="cursor:pointer">ZIP</span>
-  </div>
+  <span class="zi-step act" id="zi-global"></span>
+  <span class="zi-step" id="zi-us"></span>
+  <span class="zi-step" id="zi-state"></span>
+  <span class="zi-step" id="zi-county"></span>
+  <span class="zi-step" id="zi-zip"></span>
+</div>
+<!-- FLY CONTROLS — compact, bottom left of globe area -->
+<div id="fly-controls" style="position:fixed;bottom:68px;left:186px;z-index:200;display:flex;gap:4px;align-items:center">
+  <span style="font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-right:4px">Fly:</span>
+  <button onclick="flyToLevel('global')" style="padding:3px 8px;border:1px solid var(--border);background:rgba(1,5,14,.9);color:var(--t3);font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:1px;border-radius:3px;cursor:pointer;transition:all .15s" onmouseover="this.style.color='var(--t1)'" onmouseout="this.style.color='var(--t3)'">Global</button>
+  <button onclick="flyToLevel('us')" style="padding:3px 8px;border:1px solid var(--border);background:rgba(1,5,14,.9);color:var(--t3);font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:1px;border-radius:3px;cursor:pointer;transition:all .15s" onmouseover="this.style.color='var(--t1)'" onmouseout="this.style.color='var(--t3)'">U.S.</button>
+  <button onclick="flyToLevel('county')" style="padding:3px 8px;border:1px solid var(--border);background:rgba(1,5,14,.9);color:var(--t3);font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:1px;border-radius:3px;cursor:pointer;transition:all .15s" onmouseover="this.style.color='var(--t1)'" onmouseout="this.style.color='var(--t3)'">County</button>
+  <button onclick="flyToLevel('zip')" style="padding:3px 8px;border:1px solid var(--border);background:rgba(1,5,14,.9);color:var(--opp);font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:1px;border-radius:3px;cursor:pointer;transition:all .15s" onmouseover="this.style.color='var(--t1)'" onmouseout="this.style.color='var(--opp)'">ZIP</button>
 </div>
 
 <!-- BAR LEGEND -->
@@ -1228,7 +1278,21 @@ function initGL(){
   cv.addEventListener('mouseleave',()=>{hideTooltip();hideArcTooltip();});
   cv.addEventListener('wheel',e=>{cam.position.z=Math.max(3,Math.min(28,cam.position.z+e.deltaY*.004));applyBarScale();updateZoomLevel();},{passive:true});
   cv.addEventListener('touchstart',e=>{if(e.touches.length===1){px=e.touches[0].clientX;py=e.touches[0].clientY;isDrag=true}},{passive:true});
-  cv.addEventListener('touchmove',e=>{if(!isDrag||e.touches.length!==1)return;tY+=(e.touches[0].clientX-px)*.005;tX+=(e.touches[0].clientY-py)*.005;tX=Math.max(-1.4,Math.min(1.4,tX));px=e.touches[0].clientX;py=e.touches[0].clientY},{passive:true});
+  cv.addEventListener('touchmove',e=>{
+    if(!isDrag)return;
+    if(e.touches.length===1){
+      tY+=(e.touches[0].clientX-px)*.005;
+      tX+=(e.touches[0].clientY-py)*.005;
+      tX=Math.max(-1.4,Math.min(1.4,tX));
+      px=e.touches[0].clientX;py=e.touches[0].clientY;
+    } else if(e.touches.length===2){
+      // Pinch to zoom
+      const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      if(cv._lastPinch){cam.position.z=Math.max(3,Math.min(28,cam.position.z-(d-cv._lastPinch)*.03));applyBarScale();updateZoomLevel();}
+      cv._lastPinch=d;
+    }
+  },{passive:true});
+  cv.addEventListener('touchend',()=>{cv._lastPinch=null;},{passive:true});
   cv.addEventListener('touchend',()=>isDrag=false);
 
   document.getElementById('tslider').addEventListener('input',e=>{
@@ -1447,9 +1511,9 @@ function buildBars(){
     const dir=pos.clone().normalize();
     // Build bars at canonical size — updateBars() scales dynamically per zoom
     const localScale=n.isLocal&&!n.layer.startsWith('re_')?0.75:1.0;
-    const barH=(0.03+(c.signal/100)*0.32)*localScale;  // max 0.35 (was 0.71 — halved)
-    const barW=(0.012+c.ent*.009)*localScale;            // max 0.021 (was 0.042 — halved)
-    const geo=new THREE.CylinderGeometry(barW,barW*1.2,barH,8);  // 8 segments = more circular
+    const barH=(0.08+(c.signal/100)*0.55)*localScale;  // max 0.63 — visible at global zoom
+    const barW=(0.022+c.ent*.014)*localScale;            // max 0.036 — clickable target
+    const geo=new THREE.CylinderGeometry(barW,barW*1.15,barH,8);
     const mat=new THREE.MeshBasicMaterial({
       color:new THREE.Color(col.r,col.g,col.b),
       transparent:true,opacity:.95
@@ -1461,7 +1525,7 @@ function buildBars(){
     bar.userData={index:i,isLocal:!!n.isLocal};
     barGrp.add(bar);barMeshes.push(bar);
     // Top cap glow disk
-    const capGeo=new THREE.CircleGeometry(barW*1.8,10);
+    const capGeo=new THREE.CircleGeometry(barW*2.8,10); // larger cap = easier hover target
     const capMat=new THREE.MeshBasicMaterial({color:new THREE.Color(col.r,col.g,col.b),transparent:true,opacity:.4,side:THREE.DoubleSide});
     const cap=new THREE.Mesh(capGeo,capMat);
     cap.position.copy(dir.clone().multiplyScalar(R*1.004+barH+.001));
@@ -2737,7 +2801,7 @@ function onCvHoverV2(e){
   // Check arc hits
   if(showArcs&&arcData.length){
     const arcLines=arcGrp.children.filter(l=>l.visible&&l.userData.arcIdx!==undefined);
-    caster.params.Line={threshold:.15};
+    caster.params.Line={threshold:.25};caster.params.Mesh={threshold:.1};
     const arcHits=caster.intersectObjects(arcLines);
     if(arcHits.length){
       hideTooltip();
@@ -2816,9 +2880,11 @@ function getBarScale(){
   // Z=4  (city):    0.04 — neighborhood-proportional
   // Z=3  (ZIP):     0.02 — street-proportional
   const z=cam?cam.position.z:16;
-  // Exponential: scale = (z/16)^3 clamped to [0.015, 1.75]
-  const raw=Math.pow(z/16,3);
-  return Math.max(0.015,Math.min(1.75,raw));
+  // Hybrid curve: stays readable at global, shrinks at county/zip
+  // Z=28: 1.4 | Z=16: 1.0 | Z=10: 0.55 | Z=7: 0.30 | Z=4: 0.12 | Z=3: 0.08
+  const t = z / 16;
+  const raw = t < 1 ? Math.pow(t, 1.8) : Math.min(1.4, t);
+  return Math.max(0.06, raw);
 }
 function applyBarScale(){
   // Don't scale the group — that distorts world positions
@@ -3255,6 +3321,33 @@ Object.assign(SEM,{
     TOXIC:'Office market functionally broken. Vacancy above 30%. Conversion or demolition only economics that work.',
   },
 });
+
+
+// Mobile menu toggle
+function toggleMobileMenu(){
+  const lp=document.querySelector('.lp');
+  if(!lp)return;
+  const open=lp.style.display==='block';
+  lp.style.display=open?'none':'block';
+  lp.style.position='fixed';
+  lp.style.top='80px';
+  lp.style.left='0';
+  lp.style.width='80vw';
+  lp.style.maxWidth='300px';
+  lp.style.height='calc(100vh - 80px)';
+  lp.style.zIndex='500';
+  lp.style.background='rgba(1,5,14,.98)';
+  lp.style.overflowY='auto';
+  document.getElementById('mob-menu').textContent=open?'☰ Layers':'✕ Close';
+}
+
+// Show mobile menu button on small screens
+function checkMobile(){
+  const btn=document.getElementById('mob-menu');
+  if(btn)btn.style.display=window.innerWidth<=900?'block':'none';
+}
+window.addEventListener('resize',checkMobile);
+checkMobile();
 
 // ── Boot ──
 initGL();
