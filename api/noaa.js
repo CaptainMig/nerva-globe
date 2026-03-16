@@ -90,12 +90,14 @@ export default async function handler(req, res) {
   } = req.query;
 
   try {
-    // Build NOAA alerts URL
-    // NOAA API v3: area and severity params must be comma-separated in the raw URL
-    let noaaUrl = `${NOAA_BASE}/alerts/active?status=actual&message_type=alert,update`;
-    if (state) noaaUrl += `&area=${state.toUpperCase()}`;
-    if (severity === 'high') noaaUrl += `&severity=Extreme,Severe`;
-    noaaUrl += `&limit=${Math.min(parseInt(limit) || 30, 100)}`;
+    // NOAA API v3 — minimal params only, no encoding issues
+    const limitN = Math.min(parseInt(limit) || 30, 100);
+    let noaaUrl = `${NOAA_BASE}/alerts/active`;
+    const qp = [];
+    if (state) qp.push(`area=${state.toUpperCase()}`);
+    if (severity === 'high') qp.push('severity=Extreme&severity=Severe');
+    qp.push(`limit=${limitN}`);
+    if (qp.length) noaaUrl += '?' + qp.join('&');
     const url = new URL(noaaUrl);
 
     const response = await fetch(url.toString(), {
@@ -106,7 +108,10 @@ export default async function handler(req, res) {
       signal: AbortSignal.timeout(8000),
     });
 
-    if (!response.ok) throw new Error(`NOAA returned HTTP ${response.status}`);
+    if (!response.ok) {
+      const body = await response.text().catch(()=>'');
+      throw new Error(`NOAA HTTP ${response.status}: ${body.slice(0,120)}`);
+    }
 
     const data = await response.json();
     const features = data.features || [];
