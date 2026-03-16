@@ -151,7 +151,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t2);font-
 .ins-cell-desc{font-size:7px;color:var(--t3);margin-top:2px;line-height:1.35}
 
 /* ══ BOTTOM BAR ══ */
-.bot{position:fixed;bottom:0;left:176px;right:210px;height:60px;z-index:200;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(1,5,11,0.98);border-top:1px solid var(--border)}
+.bot{position:fixed;bottom:0;left:176px;right:210px;height:60px;z-index:200;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(1,5,11,0.98);border-top:1px solid var(--border);padding:0 12px}
 .hz-lbl{font-size:6px;letter-spacing:2.5px;text-transform:uppercase;color:var(--t3);white-space:nowrap}
 .hz-display{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--t1);min-width:220px;text-align:center}
 .hz-row{display:flex;align-items:center;gap:8px;width:340px}
@@ -361,54 +361,42 @@ body.top5-open #globe-panel{top:132px}
 
 /* ══ MOBILE RESPONSIVE ══ */
 @media (max-width: 900px) {
-  /* Hide side panels — globe goes full width */
   .lp{display:none!important}
   .rp{display:none!important}
   .opp-panel{display:none!important}
   #live-feed-panel{display:none!important}
-  /* Hide desktop-only elements */
-  #bar-legend{display:none!important}
-  #top5-toggle{display:none!important}
-  #arc-tooltip{display:none!important}
-
-  /* Canvas + panels span full width */
-  #cv{left:0!important;right:0!important;top:80px!important;width:100vw!important}
-  #globe-panel{left:0!important;right:0!important}
-  #map-panel{left:0!important;right:0!important}
+  #cv{left:0!important;right:0!important;top:80px!important;width:100vw!important;height:calc(100dvh - 140px)!important}
+  #globe-panel{left:0!important;right:0!important;top:80px!important}
+  #map-panel{left:0!important;right:0!important;top:80px!important}
   #tab-bar{left:0!important;right:0!important}
   #top5{left:0!important;right:0!important}
   #live-bar{left:0!important;right:0!important}
-  #fly-controls{left:8px!important}
-  #btn-screenshot{display:none}
-
-  /* Topbar — hide most macro stats, keep key ones */
+  .bot{left:0!important;right:0!important}
+  #fly-controls{display:none!important}
+  #btn-screenshot{display:none!important}
+  #top5-toggle{left:50%;transform:translateX(-50%)}
   .macro-item{display:none!important}
   .macro-item:nth-child(1),.macro-item:nth-child(2),.macro-item:nth-child(3){display:flex!important}
-  .tb-btn-grp{gap:4px}
-  .tb-btn{padding:3px 7px;font-size:6px;letter-spacing:1px}
-  .topbar-brand{font-size:14px;letter-spacing:3px}
-  .topbar-sub{display:none}
-
-  /* Detail panel full width */
-  .dp{left:0!important;right:0!important;width:100%!important;max-width:100vw}
-  #map-detail{width:100%!important;top:auto;bottom:0;height:55vh;border-top:1px solid var(--border2)}
-  /* Live events panel: bottom sheet on mobile */
-  #live-feed-panel{position:fixed!important;top:auto!important;bottom:60px!important;left:0!important;right:0!important;width:100%!important;height:45vh!important;border-top:1px solid var(--border2)!important;display:none}
-  #live-feed-panel.mobile-open{display:block!important}
-
-  /* Time slider readable on mobile */
-  .hz-row input[type=range]{height:24px}
-  #bottom-bar{padding:8px 12px 20px}
+  .tb-btn-grp{gap:3px}
+  .tb-btn{padding:3px 6px;font-size:6px}
+  .topbar-brand{font-size:13px;letter-spacing:2px}
+  .topbar-sub{display:none!important}
+  .dp{left:0!important;right:0!important;width:100%!important;max-width:100vw!important;top:80px!important}
+  #map-detail{width:100%!important;top:auto!important;bottom:0!important;height:55vh!important}
+  .hz-row{width:90vw!important}
+  .hz-row input[type=range]{flex:1}
+  .hz-ticks{width:90vw!important}
 }
-
 @media (max-width: 480px) {
-  .ld-logo{font-size:36px;letter-spacing:6px}
+  .ld-logo{font-size:32px;letter-spacing:5px}
   #top5.vis{height:44px}
   .top5-cards{overflow-x:auto}
-  .top5-card{min-width:140px;flex-shrink:0}
-  .top5-why{display:none}
+  .top5-card{min-width:130px;flex-shrink:0}
+  .top5-why{display:none!important}
   .intro-cards{flex-direction:column;gap:8px}
-  .intro-card{max-width:100%}
+  .intro-card{max-width:100%!important}
+  .tb-btn{display:none!important}
+  #b-live,#b-rot{display:flex!important}
 }
 </style>
 </head>
@@ -655,32 +643,32 @@ body.top5-open #globe-panel{top:132px}
   </div>
 </div>
 
-<!-- LIVE DATA STATUS BAR -->
-<div id="live-bar" style="position:fixed;bottom:60px;left:176px;right:210px;z-index:200;height:0;overflow:hidden;transition:height .3s;background:rgba(1,5,14,.97);border-top:1px solid var(--border2)">
-  <div style="padding:9px 16px;display:flex;gap:18px;align-items:center;flex-wrap:wrap">
-    <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--t2);font-weight:600">Live Feeds</div>
-    <div id="feed-fema" style="display:flex;gap:6px;align-items:center">
-      <div id="fema-dot" style="width:7px;height:7px;border-radius:50%;background:var(--t3)"></div>
-      <span style="font-size:9px;color:var(--t2)" id="fema-status">FEMA NFIP — standby</span>
+<!-- LIVE DATA STATUS BAR — horizontal ticker above bottom bar -->
+<div id="live-bar" style="position:fixed;bottom:60px;left:176px;right:210px;z-index:200;height:0;overflow:hidden;transition:height .25s;background:rgba(1,5,14,.98);border-top:1px solid var(--border2)">
+  <div style="padding:6px 12px;display:flex;gap:0;align-items:center;overflow-x:auto;scrollbar-width:none;white-space:nowrap">
+    <div style="font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-right:12px;flex-shrink:0">Feeds</div>
+    <div id="feed-fema" style="display:flex;gap:5px;align-items:center;margin-right:14px;flex-shrink:0">
+      <div id="fema-dot" style="width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0"></div>
+      <span style="font-size:8.5px;color:var(--t2)" id="fema-status">FEMA — standby</span>
     </div>
-    <div id="feed-usgs" style="display:flex;gap:6px;align-items:center">
-      <div id="usgs-dot" style="width:7px;height:7px;border-radius:50%;background:var(--t3)"></div>
-      <span style="font-size:9px;color:var(--t2)" id="usgs-status">USGS Seismic — standby</span>
+    <div id="feed-usgs" style="display:flex;gap:5px;align-items:center;margin-right:14px;flex-shrink:0">
+      <div id="usgs-dot" style="width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0"></div>
+      <span style="font-size:8.5px;color:var(--t2)" id="usgs-status">USGS — standby</span>
     </div>
-    <div id="feed-noaa" style="display:flex;gap:6px;align-items:center">
-      <div id="noaa-dot" style="width:7px;height:7px;border-radius:50%;background:var(--t3)"></div>
-      <span style="font-size:9px;color:var(--t2)" id="noaa-status">NOAA Alerts — standby</span>
+    <div id="feed-noaa" style="display:flex;gap:5px;align-items:center;margin-right:14px;flex-shrink:0">
+      <div id="noaa-dot" style="width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0"></div>
+      <span style="font-size:8.5px;color:var(--t2)" id="noaa-status">NOAA — standby</span>
     </div>
-    <div id="feed-world" style="display:flex;gap:6px;align-items:center">
-      <div id="world-dot" style="width:7px;height:7px;border-radius:50%;background:var(--t3)"></div>
-      <span style="font-size:9px;color:var(--t2)" id="world-status">Open-Meteo — standby</span>
+    <div id="feed-world" style="display:flex;gap:5px;align-items:center;margin-right:14px;flex-shrink:0">
+      <div id="world-dot" style="width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0"></div>
+      <span style="font-size:8.5px;color:var(--t2)" id="world-status">Open-Meteo — standby</span>
     </div>
-    <div id="feed-fred" style="display:flex;gap:6px;align-items:center">
-      <div id="fred-dot" style="width:7px;height:7px;border-radius:50%;background:var(--t3)"></div>
-      <span style="font-size:9px;color:var(--t2)" id="fred-status">FRED — standby</span>
+    <div id="feed-fred" style="display:flex;gap:5px;align-items:center;margin-right:14px;flex-shrink:0">
+      <div id="fred-dot" style="width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0"></div>
+      <span style="font-size:8.5px;color:var(--t2)" id="fred-status">FRED — standby</span>
     </div>
-    <div style="margin-left:auto;font-size:8px;color:var(--t3)" id="live-lastupdate">Not loaded</div>
-    <button onclick="fetchAllLiveData()" style="padding:4px 12px;border:1px solid var(--border2);background:none;color:var(--t2);font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;border-radius:3px;cursor:pointer">↻ Refresh</button>
+    <div style="margin-left:auto;font-size:7.5px;color:var(--t3);flex-shrink:0;padding-left:8px" id="live-lastupdate">Not loaded</div>
+    <button onclick="fetchAllLiveData()" style="margin-left:8px;padding:3px 10px;border:1px solid var(--border2);background:none;color:var(--t2);font-family:'IBM Plex Mono',monospace;font-size:7.5px;letter-spacing:1px;border-radius:3px;cursor:pointer;flex-shrink:0">↻</button>
   </div>
 </div>
 
