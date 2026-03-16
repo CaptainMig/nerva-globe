@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "functions": {
+    "api/fred.js":       { "runtime": "nodejs20.x", "maxDuration": 10 },
+    "api/noaa.js":       { "runtime": "nodejs20.x", "maxDuration": 10 },
+    "api/census.js":     { "runtime": "nodejs20.x", "maxDuration": 15 },
+    "api/realty.js":     { "runtime": "nodejs20.x", "maxDuration": 15 },
+    "api/corporate.js":  { "runtime": "nodejs20.x", "maxDuration": 10 },
+    "api/energy.js":     { "runtime": "nodejs20.x", "maxDuration": 10 },
+    "api/nerva.js":      { "runtime": "nodejs20.x", "maxDuration": 10 }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
+      ]
+    }
+  ]
+}
