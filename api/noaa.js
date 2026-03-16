@@ -91,14 +91,12 @@ export default async function handler(req, res) {
 
   try {
     // Build NOAA alerts URL
-    const url = new URL(`${NOAA_BASE}/alerts/active`);
-    if (state) url.searchParams.set('area', state.toUpperCase());
-    url.searchParams.set('status', 'actual');
-    url.searchParams.set('message_type', 'alert,update');
-    if (severity === 'high') {
-      url.searchParams.set('severity', 'Extreme,Severe');
-    }
-    url.searchParams.set('limit', Math.min(parseInt(limit) || 30, 100).toString());
+    // NOAA API v3: area and severity params must be comma-separated in the raw URL
+    let noaaUrl = `${NOAA_BASE}/alerts/active?status=actual&message_type=alert,update`;
+    if (state) noaaUrl += `&area=${state.toUpperCase()}`;
+    if (severity === 'high') noaaUrl += `&severity=Extreme,Severe`;
+    noaaUrl += `&limit=${Math.min(parseInt(limit) || 30, 100)}`;
+    const url = new URL(noaaUrl);
 
     const response = await fetch(url.toString(), {
       headers: {
