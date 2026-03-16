@@ -9,7 +9,8 @@
 <meta property="og:title" content="NERVA Globe — Signal Intelligence Surface">
 <meta property="og:description" content="170+ nodes. 32 layers. Live data. Quantum entropy math. Built by Starpoint Enterprises.">
 <meta name="theme-color" content="#010407">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23010407' stroke='%2300ff9d' stroke-width='4'/><circle cx='50' cy='50' r='8' fill='%2300ff9d'/><line x1='50' y1='5' x2='50' y2='30' stroke='%2300ff9d' stroke-width='2.5'/><line x1='50' y1='70' x2='50' y2='95' stroke='%23ff1744' stroke-width='2.5'/></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23010407' stroke='%2300ff9d' stroke-width='3'/><circle cx='50' cy='50' r='48' fill='none' stroke='%2300ff9d' stroke-width='1' opacity='0.3'/><circle cx='50' cy='50' r='7' fill='%2300ff9d'/><line x1='50' y1='4' x2='50' y2='28' stroke='%2300ff9d' stroke-width='2.5' stroke-linecap='round'/><line x1='50' y1='72' x2='50' y2='96' stroke='%23ff1744' stroke-width='2.5' stroke-linecap='round'/><line x1='4' y1='50' x2='22' y2='50' stroke='%2300ff9d' stroke-width='1.5' stroke-linecap='round' opacity='0.5'/><line x1='78' y1='50' x2='96' y2='50' stroke='%2300ff9d' stroke-width='1.5' stroke-linecap='round' opacity='0.5'/></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23010407'/><circle cx='50' cy='50' r='42' fill='none' stroke='%2300ff9d' stroke-width='3'/><circle cx='50' cy='50' r='7' fill='%2300ff9d'/><line x1='50' y1='8' x2='50' y2='30' stroke='%2300ff9d' stroke-width='2.5' stroke-linecap='round'/><line x1='50' y1='70' x2='50' y2='92' stroke='%23ff1744' stroke-width='2.5' stroke-linecap='round'/></svg>">
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.1.2/dist/maplibre-gl.css">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Bebas+Neue&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
@@ -4240,8 +4241,8 @@ function getMobileHTML() {
 </div>
 <div class="m-horizon">
   <div class="m-hz-label">Time Horizon</div>
-  <div class="m-hz-val" id="m-hz-val">72 Hours — Tactical Window</div>
-  <input class="m-hz-slider" type="range" id="m-hz-slider" min="0" max="5" step="1" value="1" oninput="mUpdateHorizon(this.value)">
+  <div class="m-hz-val" id="m-hz-val">24 Hours — Flash Crisis</div>
+  <input class="m-hz-slider" type="range" id="m-hz-slider" min="0" max="5" step="1" value="0" oninput="mUpdateHorizon(this.value)">
   <div class="m-hz-ticks">
     <span class="m-hz-tick">24h</span><span class="m-hz-tick">72h</span><span class="m-hz-tick">30d</span>
     <span class="m-hz-tick">6mo</span><span class="m-hz-tick">2yr</span><span class="m-hz-tick" style="color:rgba(192,132,252,.7)">10yr</span>
@@ -4266,7 +4267,7 @@ function getMobileHTML() {
 const MC = { COMMIT:'#00ff9d', HOLD:'#fbbf24', WAIT:'#60a5fa', ESCALATE:'#f97316', TOXIC:'#ff1744' };
 const HZ_LABELS = ['24 Hours — Flash Crisis','72 Hours — Tactical Window','30 Days — Operational','6 Months — Strategic Arc','2 Years — Investment Cycle','10 Years — Civilizational'];
 const HZ_DECAY  = [1.0,0.92,0.80,0.65,0.50,0.35];
-let mHorizon=1, mSearchMode='residential', mIntentMode='live', mLastZIPResult=null, mLiveData={};
+let mHorizon=0, mSearchMode='residential', mIntentMode='live', mLastZIPResult=null, mLiveData={};
 
 function mUpdateHorizon(val){
   mHorizon=parseInt(val);
@@ -4293,7 +4294,7 @@ function mSetIntent(mode){
 
 async function loadMobileData(){
   const btn=document.getElementById('m-live-btn');
-  if(btn){btn.textContent='…';btn.style.opacity='.5';}
+  if(btn){btn.textContent='…';btn.style.opacity='.5';btn.style.transform='scale(.96)';}
   try{
     const [noaaR,fredR,eiaR]=await Promise.allSettled([
       ON_VERCEL?fetch('/api/noaa?severity=all').then(r=>r.json()).catch(()=>null):Promise.resolve(null),
@@ -4331,7 +4332,18 @@ async function loadMobileData(){
     document.getElementById('m-ticker-text').textContent='Live data unavailable — baseline signals shown';
     renderMobileNodes();
   }finally{
-    if(btn){btn.textContent='⬤ Live Data';btn.style.opacity='1';}
+    if(btn){
+      btn.textContent='⬤ Live Data';
+      btn.style.opacity='1';
+      btn.style.transform='';
+      // Flash confirmation
+      btn.style.background='rgba(0,255,157,.2)';
+      btn.style.borderColor='rgba(0,255,157,.8)';
+      setTimeout(()=>{
+        btn.style.background='rgba(0,255,157,.06)';
+        btn.style.borderColor='rgba(0,255,157,.3)';
+      }, 1200);
+    }
   }
 }
 
@@ -4521,4 +4533,3 @@ function closeMobileResult(){
 <div id="dp-backdrop" onclick="closeDetail()" style="display:none;position:fixed;inset:0;z-index:149;background:rgba(0,0,0,.5);-webkit-tap-highlight-color:transparent"></div>
 </body>
 </html>
-
