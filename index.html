@@ -199,7 +199,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;heigh
 .zi-div{font-size:8px;color:var(--t3);opacity:.35}
 
 /* ══ BAR LEGEND ══ */
-#bar-legend{position:fixed;bottom:68px;right:218px;z-index:200;background:rgba(1,5,14,0.92);border:1px solid var(--border);border-radius:4px;padding:8px 12px;pointer-events:none;min-width:160px}
+#bar-legend{position:fixed;bottom:68px;right:218px;z-index:200;background:rgba(1,5,14,0.92);border:1px solid var(--border);border-radius:4px;padding:8px 12px;min-width:160px;transition:all .2s}
+#bar-legend:hover{border-color:var(--border2)}
+#legend-body{transition:all .2s;overflow:hidden}
 .bl-title{font-size:6px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:6px}
 .bl-row{display:flex;align-items:center;gap:7px;margin-bottom:4px}
 .bl-bar-demo{border-radius:1px;flex-shrink:0}
@@ -909,26 +911,31 @@ body.top5-open #globe-panel{top:132px}
 </div>
 
 <!-- BAR LEGEND -->
-<div id="bar-legend">
-  <div class="bl-title">Bar Height = Signal Strength</div>
-  <div class="bl-row">
-    <div class="bl-bar-demo" style="width:4px;height:24px;color:var(--commit)"></div>
-    <div class="bl-text"><strong style="color:var(--commit)">Tall</strong> = High signal, low entropy<br>Clean read — actionable</div>
+<div id="bar-legend" style="cursor:pointer" onclick="toggleLegend()" title="Click to collapse">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div class="bl-title">Bar Height = Signal Strength</div>
+    <span id="legend-toggle" style="font-size:9px;color:var(--t3);margin-left:8px">▼</span>
   </div>
-  <div class="bl-row">
-    <div class="bl-bar-demo" style="width:4px;height:10px;color:var(--toxic)"></div>
-    <div class="bl-text"><strong style="color:var(--toxic)">Short + red</strong> = Noise-dominated<br>Toxic or escalating — monitor</div>
-  </div>
-  <div class="bl-row">
-    <div class="bl-bar-demo" style="width:4px;height:16px;color:var(--opp)"></div>
-    <div class="bl-text"><strong style="color:var(--opp)">Purple ring</strong> = Opportunity signal<br>Toxic now → Commit trajectory</div>
-  </div>
-  <div class="bl-states">
-    <div class="bl-state"><div class="bl-state-dot" style="background:var(--commit)"></div><span style="color:var(--commit)">COMMIT</span></div>
-    <div class="bl-state"><div class="bl-state-dot" style="background:var(--hold)"></div><span style="color:var(--hold)">HOLD</span></div>
-    <div class="bl-state"><div class="bl-state-dot" style="background:var(--wait)"></div><span style="color:var(--wait)">WAIT</span></div>
-    <div class="bl-state"><div class="bl-state-dot" style="background:var(--escalate)"></div><span style="color:var(--escalate)">ESCALATE</span></div>
-    <div class="bl-state"><div class="bl-state-dot" style="background:var(--toxic)"></div><span style="color:var(--toxic)">TOXIC</span></div>
+  <div id="legend-body">
+    <div class="bl-row">
+      <div class="bl-bar-demo" style="width:4px;height:24px;color:var(--commit)"></div>
+      <div class="bl-text"><strong style="color:var(--commit)">Tall</strong> = High signal, low entropy<br>Clean read — actionable</div>
+    </div>
+    <div class="bl-row">
+      <div class="bl-bar-demo" style="width:4px;height:10px;color:var(--toxic)"></div>
+      <div class="bl-text"><strong style="color:var(--toxic)">Short + red</strong> = Noise-dominated<br>Toxic or escalating — monitor</div>
+    </div>
+    <div class="bl-row">
+      <div class="bl-bar-demo" style="width:4px;height:16px;color:var(--opp)"></div>
+      <div class="bl-text"><strong style="color:var(--opp)">Purple ring</strong> = Opportunity signal<br>Toxic now → Commit trajectory</div>
+    </div>
+    <div class="bl-states">
+      <div class="bl-state"><div class="bl-state-dot" style="background:var(--commit)"></div><span style="color:var(--commit)">COMMIT</span></div>
+      <div class="bl-state"><div class="bl-state-dot" style="background:var(--hold)"></div><span style="color:var(--hold)">HOLD</span></div>
+      <div class="bl-state"><div class="bl-state-dot" style="background:var(--wait)"></div><span style="color:var(--wait)">WAIT</span></div>
+      <div class="bl-state"><div class="bl-state-dot" style="background:var(--escalate)"></div><span style="color:var(--escalate)">ESCALATE</span></div>
+      <div class="bl-state"><div class="bl-state-dot" style="background:var(--toxic)"></div><span style="color:var(--toxic)">TOXIC</span></div>
+    </div>
   </div>
 </div>
 
@@ -1222,65 +1229,75 @@ const RE_NODES=[
 // Positioned above Earth — rendered as special markers on the globe
 // lat/lng represent substellar point or geopolitical anchor location
 const SPACE_NODES = [
-  { n:'ISS', layer:'space', lat:51.6, lng:0, entropy:0.18,
-    why:['Orbital altitude 408km — crewed international research platform',
-         'US-Russia-China cooperation under structural pressure',
-         'Post-2030 deorbit plan creates program continuity uncertainty'],
-    note:'International Space Station — real-time position via live feed' },
+  {n:'ISS',layer:'space',lat:51.6,lng:0,ent:.18,coh:.82,ev:true,th:0.6,ph:1.2,
+   ts:[1,1,1,0,0,0],
+   why:['Orbital altitude 408km — crewed international research platform',
+        'US-Russia-China cooperation under structural pressure',
+        'Post-2030 deorbit plan creates program continuity uncertainty'],
+   d:'International Space Station — real-time position via live feed'},
 
-  { n:'Moon', layer:'space', lat:0, lng:0, entropy:0.35,
-    why:['Artemis III crewed landing targeting 2027 — lunar south pole',
-         "Chang'e 7 targeting 2026 — same south pole water ice deposit",
-         'First nation to establish permanent lunar presence controls helium-3 and water ice'],
-    note:'Lunar competition — US vs China south pole resource race' },
+  {n:'Moon',layer:'space',lat:0,lng:20,ent:.35,coh:.65,ev:false,th:1.1,ph:2.1,
+   ts:[2,2,1,1,0,0],
+   why:['Artemis III crewed landing targeting 2027 — lunar south pole',
+        "Chang'e 7 targeting 2026 — same south pole water ice deposit",
+        'First nation to establish permanent lunar presence controls helium-3 and water ice'],
+   d:'Lunar competition — US vs China south pole resource race'},
 
-  { n:'Mars', layer:'space', lat:0, lng:180, entropy:0.55,
-    why:['SpaceX Starship Mars mission targeting 2026 — first uncrewed landing',
-         'NASA-SpaceX architecture dependency creates single point of failure',
-         'Dust storm season 2026 creates mission window uncertainty'],
-    note:'Mars colonization race — SpaceX vs geopolitical context' },
+  {n:'Mars',layer:'space',lat:0,lng:160,ent:.55,coh:.45,ev:false,th:1.7,ph:3.5,
+   ts:[2,2,2,2,1,0],
+   why:['SpaceX Starship Mars mission targeting 2026 — first uncrewed landing',
+        'NASA-SpaceX architecture dependency creates single point of failure',
+        'Dust storm season 2026 creates mission window uncertainty'],
+   d:'Mars colonization race — SpaceX vs geopolitical context'},
 
-  { n:'Solar Activity', layer:'space', lat:0, lng:90, entropy:0.28,
-    why:['Solar Cycle 25 approaching maximum 2025-2026',
-         'X-class flares disrupt GPS, satellite comms, power grids',
-         'Geomagnetic storms elevate satellite drag — orbital decay accelerates'],
-    note:'Solar Cycle 25 peak — space weather risk elevated' },
+  {n:'Solar Activity',layer:'space',lat:0,lng:90,ent:.28,coh:.72,ev:true,th:0.9,ph:1.8,
+   ts:[1,1,2,2,1,0],
+   why:['Solar Cycle 25 approaching maximum 2025-2026',
+        'X-class flares disrupt GPS satellite comms and power grids',
+        'Geomagnetic storms elevate satellite drag — orbital decay accelerates'],
+   d:'Solar Cycle 25 peak — space weather risk elevated'},
 
-  { n:'Starlink', layer:'space', lat:53, lng:-100, entropy:0.32,
-    why:['6,000+ satellites operational — largest constellation in history',
-         'Ukrainian battlefield dependency creates geopolitical vulnerability',
-         'Kessler syndrome risk rising with debris density in LEO'],
-    note:'Starlink LEO constellation — military/civilian dual-use tension' },
+  {n:'Starlink',layer:'space',lat:53,lng:-100,ent:.32,coh:.68,ev:true,th:1.0,ph:2.4,
+   ts:[1,1,1,2,1,0],
+   why:['6000+ satellites operational — largest constellation in history',
+        'Ukrainian battlefield dependency creates geopolitical vulnerability',
+        'Kessler syndrome risk rising with debris density in LEO'],
+   d:'Starlink LEO constellation — military/civilian dual-use tension'},
 
-  { n:'GPS Constellation', layer:'space', lat:55, lng:20, entropy:0.22,
-    why:['31 operational GPS satellites — US military and civilian backbone',
-         'Russia GLONASS + China BeiDou creating multi-constellation competition',
-         'Solar flare disruption risk elevated during Cycle 25 peak'],
-    note:'GPS/GNSS global navigation — solar weather vulnerability' },
+  {n:'GPS Constellation',layer:'space',lat:55,lng:20,ent:.22,coh:.78,ev:true,th:0.7,ph:1.4,
+   ts:[1,0,0,0,0,0],
+   why:['31 operational GPS satellites — US military and civilian backbone',
+        'Russia GLONASS + China BeiDou creating multi-constellation competition',
+        'Solar flare disruption risk elevated during Cycle 25 peak'],
+   d:'GPS/GNSS global navigation — solar weather vulnerability'},
 
-  { n:'Artemis Program', layer:'space', lat:28.5, lng:-80.5, entropy:0.52,
-    why:['Artemis III crewed lunar landing slipping from 2026 to 2027+',
-         "China Chang'e program accelerating — competitive pressure on timeline",
-         'Budget uncertainty under new administration creates program risk'],
-    note:'NASA Artemis — crewed return to Moon under competitive pressure' },
+  {n:'Artemis Program',layer:'space',lat:28.5,lng:-80.5,ent:.52,coh:.48,ev:false,th:1.6,ph:3.1,
+   ts:[2,2,2,1,0,0],
+   why:['Artemis III crewed lunar landing slipping from 2026 to 2027+',
+        "China Chang'e program accelerating — competitive pressure on timeline",
+        'Budget uncertainty under new administration creates program risk'],
+   d:'NASA Artemis — crewed return to Moon under competitive pressure'},
 
-  { n:'Asteroid Belt', layer:'space', lat:-5, lng:135, entropy:0.18,
-    why:['Near-Earth asteroid mining commercially viable by 2030+',
-         'Psyche mission orbiting metal-rich asteroid — $10 quintillion resource estimate',
-         'No legal framework for extraterrestrial resource ownership'],
-    note:'Space mining — asteroid resource rights undefined' },
+  {n:'Asteroid Belt',layer:'space',lat:-5,lng:135,ent:.18,coh:.82,ev:true,th:0.6,ph:0.9,
+   ts:[0,0,0,0,0,0],
+   why:['Near-Earth asteroid mining commercially viable by 2030+',
+        'Psyche mission orbiting metal-rich asteroid — $10 quintillion resource estimate',
+        'No legal framework for extraterrestrial resource ownership'],
+   d:'Space mining — asteroid resource rights undefined'},
 
-  { n:'Space Debris', layer:'space', lat:0, lng:-45, entropy:0.45,
-    why:['27,000+ tracked debris objects in orbit',
-         'Russian ASAT test 2021 debris field still active',
-         'Kessler cascade risk threshold approaching in LEO bands'],
-    note:'Orbital debris — Kessler cascade risk in low Earth orbit' },
+  {n:'Space Debris',layer:'space',lat:0,lng:-45,ent:.45,coh:.55,ev:false,th:1.4,ph:2.7,
+   ts:[2,2,2,2,2,1],
+   why:['27000+ tracked debris objects in orbit',
+        'Russian ASAT test 2021 debris field still active',
+        'Kessler cascade risk threshold approaching in LEO bands'],
+   d:'Orbital debris — Kessler cascade risk in low Earth orbit'},
 
-  { n:'Deep Space Comms', layer:'space', lat:35, lng:-116, entropy:0.25,
-    why:['NASA Deep Space Network — Goldstone, Madrid, Canberra',
-         'Mars/Moon mission communication latency creates autonomous operation dependency',
-         'Solar conjunction blackout periods create mission vulnerability windows'],
-    note:'Deep Space Network — solar conjunction and bandwidth constraints' },
+  {n:'Deep Space Comms',layer:'space',lat:35,lng:-116,ent:.25,coh:.75,ev:true,th:0.8,ph:1.6,
+   ts:[1,1,1,0,0,0],
+   why:['NASA Deep Space Network — Goldstone Madrid Canberra',
+        'Mars/Moon mission communication latency creates autonomous operation dependency',
+        'Solar conjunction blackout periods create mission vulnerability windows'],
+   d:'Deep Space Network — solar conjunction and bandwidth constraints'},
 ];
 
 const ALL_NODES=[...NODES,...US_LOCAL_NODES,...RE_NODES,...SPACE_NODES];
@@ -3692,6 +3709,25 @@ Object.assign(SEM,{
 
 
 // Mobile menu toggle
+function toggleLegend(){
+  const body=document.getElementById('legend-body');
+  const tog=document.getElementById('legend-toggle');
+  if(!body)return;
+  const collapsed=body.style.display==='none';
+  body.style.display=collapsed?'':'none';
+  if(tog)tog.textContent=collapsed?'▼':'▶';
+  localStorage.setItem('legendCollapsed',collapsed?'0':'1');
+}
+// Restore legend state on load
+window.addEventListener('DOMContentLoaded',()=>{
+  if(localStorage.getItem('legendCollapsed')==='1'){
+    const body=document.getElementById('legend-body');
+    const tog=document.getElementById('legend-toggle');
+    if(body)body.style.display='none';
+    if(tog)tog.textContent='▶';
+  }
+});
+
 function toggleMobileMenu(){
   const lp = document.querySelector('.lp');
   if (!lp) return;
