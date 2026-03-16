@@ -360,6 +360,30 @@ body.top5-open #globe-panel{top:132px}
 .mlb-dot{width:5px;height:5px;border-radius:50%}
 
 /* ══ MOBILE RESPONSIVE ══ */
+/* ── MOBILE DETAIL PANEL: bottom sheet ── */
+@media (max-width: 900px) {
+  .dp{
+    top:auto!important;
+    bottom:60px!important;
+    left:0!important;
+    right:0!important;
+    width:100%!important;
+    max-width:100vw!important;
+    max-height:55dvh!important;
+    border-radius:14px 14px 0 0!important;
+    border-top:1px solid rgba(255,255,255,.12)!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  .dp::before{
+    content:'';
+    display:block;
+    width:40px;height:4px;
+    background:rgba(255,255,255,.15);
+    border-radius:2px;
+    margin:10px auto 0;
+  }
+}
 @media (max-width: 900px) {
   /* ── Hide desktop side panels ── */
   .lp{display:none!important}
@@ -1388,6 +1412,7 @@ function initGL(){
   cv.addEventListener('wheel',e=>{cam.position.z=Math.max(3,Math.min(28,cam.position.z+e.deltaY*.004));applyBarScale();updateZoomLevel();},{passive:true});
   cv.addEventListener('touchstart',e=>{if(e.touches.length===1){px=e.touches[0].clientX;py=e.touches[0].clientY;isDrag=true}},{passive:true});
   cv.addEventListener('touchmove',e=>{
+    e.preventDefault(); // Prevent iOS page bounce during globe interaction
     if(!isDrag)return;
     if(e.touches.length===1){
       tY+=(e.touches[0].clientX-px)*.005;
@@ -1400,7 +1425,7 @@ function initGL(){
       if(cv._lastPinch){cam.position.z=Math.max(3,Math.min(28,cam.position.z-(d-cv._lastPinch)*.03));applyBarScale();updateZoomLevel();}
       cv._lastPinch=d;
     }
-  },{passive:true});
+  },{passive:false});
   cv.addEventListener('touchend',()=>{cv._lastPinch=null;},{passive:true});
   cv.addEventListener('touchend',()=>isDrag=false);
 
@@ -1954,6 +1979,9 @@ function showDetail(idx){
   document.getElementById('dp').classList.add('vis');
   document.querySelectorAll('.nc').forEach(c=>c.classList.remove('act'));
   document.querySelector(`.nc[data-idx="${idx}"]`)?.classList.add('act');
+  // Show mobile backdrop (desktop: invisible, mobile: semi-transparent)
+  const bd=document.getElementById('dp-backdrop');
+  if(bd)bd.style.display='block';
 }
 
 function buildDrivers(c,hex){
@@ -1972,6 +2000,9 @@ function closeDetail(){
   document.getElementById('dp').classList.remove('vis');
   selIdx=null;
   document.querySelectorAll('.nc').forEach(c=>c.classList.remove('act'));
+  // Hide mobile backdrop
+  const bd=document.getElementById('dp-backdrop');
+  if(bd)bd.style.display='none';
   // Restore node list if it was hidden by live panel
   const rp=document.querySelector('.rp');
   if(rp&&rp.style.display==='none'){
@@ -4023,7 +4054,471 @@ function enrichZIPWithRealty(realtyData, censusResult) {
 
 
 // ── Boot ──
-initGL();
+const IS_MOBILE = window.innerWidth <= 700 || /iPhone|Android|iPad|Mobile/i.test(navigator.userAgent);
+if (IS_MOBILE) {
+  initMobileDashboard();
+} else {
+  initGL();
+}
+
+// ════════════════════════════════════════════════════════════════
+// MOBILE SIGNAL DASHBOARD
+// ════════════════════════════════════════════════════════════════
+
+function initMobileDashboard() {
+  document.querySelector('.tb')?.remove();
+  document.querySelector('#tab-bar')?.remove();
+  document.querySelector('.lp')?.remove();
+  document.querySelector('.rp')?.remove();
+  document.querySelector('.bot')?.remove();
+  document.getElementById('mob-menu')?.remove();
+  document.getElementById('mob-nodes-btn')?.remove();
+  document.getElementById('mob-nodes-panel')?.remove();
+  document.getElementById('cv')?.remove();
+  document.getElementById('globe-panel')?.remove();
+  document.getElementById('map-panel')?.remove();
+  document.getElementById('live-bar')?.remove();
+  document.getElementById('live-feed-panel')?.remove();
+  document.getElementById('top5')?.remove();
+
+  document.body.style.cssText = 'background:#01050e;color:#e8edf5;font-family:"IBM Plex Sans",sans-serif;margin:0;padding:0;overflow-x:hidden';
+  document.body.innerHTML = getMobileCSS() + getMobileHTML();
+
+  document.getElementById('m-zip-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') mobileSearchZIP();
+    if (!/[\d\b]/.test(e.key) && !['ArrowLeft','ArrowRight','Delete','Tab','Backspace'].includes(e.key)) e.preventDefault();
+  });
+
+  loadMobileData();
+}
+
+function getMobileCSS() {
+  return `<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+.m-nav{position:sticky;top:0;z-index:100;background:rgba(1,5,14,.98);border-bottom:1px solid rgba(255,255,255,.08);padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
+.m-brand{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:#00ff9d}
+.m-brand-sub{font-size:8px;letter-spacing:2px;color:#4a6080;font-family:'IBM Plex Mono',monospace;margin-top:-2px}
+.m-live-btn{padding:7px 14px;background:rgba(0,255,157,.06);border:1px solid rgba(0,255,157,.3);color:#00ff9d;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1.5px;border-radius:3px;cursor:pointer}
+.m-macro{display:flex;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(6,13,26,.8)}
+.m-macro::-webkit-scrollbar{display:none}
+.m-macro-item{flex-shrink:0;padding:8px 14px;border-right:1px solid rgba(255,255,255,.06);text-align:center;min-width:72px}
+.m-macro-lbl{font-family:'IBM Plex Mono',monospace;font-size:6.5px;letter-spacing:2px;text-transform:uppercase;color:#4a6080;margin-bottom:3px}
+.m-macro-val{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;line-height:1}
+.m-ticker{background:rgba(6,13,26,.9);padding:7px 16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.m-ticker-inner{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#4a6080;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-ticker-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:#00ff9d;margin-right:6px;vertical-align:middle;animation:mpulse 2s ease-in-out infinite}
+@keyframes mpulse{0%,100%{opacity:1}50%{opacity:.3}}
+.m-search{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.m-search-tabs{display:flex;border:1px solid rgba(255,255,255,.08);border-radius:5px;overflow:hidden;margin-bottom:10px}
+.m-stab{flex:1;padding:9px;background:none;border:none;color:#4a6080;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;cursor:pointer;transition:all .15s}
+.m-stab.act{background:rgba(0,255,157,.08);color:#00ff9d}
+.m-search-row{display:flex;gap:8px}
+.m-search-input{flex:1;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#e8edf5;font-family:'IBM Plex Mono',monospace;font-size:14px;border-radius:4px;outline:none}
+.m-search-input:focus{border-color:rgba(0,255,157,.4)}
+.m-search-btn{padding:10px 16px;background:rgba(0,255,157,.06);border:1px solid rgba(0,255,157,.3);color:#00ff9d;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;border-radius:4px;cursor:pointer}
+.m-corp-row{display:flex;gap:8px}
+.m-corp-sel{flex:1;padding:10px 10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#e8edf5;font-family:'IBM Plex Mono',monospace;font-size:11px;border-radius:4px;outline:none}
+.m-result{margin:10px 16px 0;background:#060d1a;border:1px solid rgba(255,255,255,.08);border-radius:6px;overflow:hidden;display:none}
+.m-result.vis{display:block}
+.m-result-head{padding:12px 14px 0;display:flex;justify-content:space-between;align-items:start}
+.m-result-name{font-size:15px;font-weight:600;color:#e8edf5}
+.m-result-sub{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#4a6080;letter-spacing:1px;margin-top:2px}
+.m-result-close{background:none;border:1px solid rgba(255,255,255,.1);color:#4a6080;padding:3px 8px;border-radius:3px;font-size:9px;cursor:pointer;font-family:'IBM Plex Mono',monospace}
+.m-result-body{padding:10px 14px 16px}
+.m-result-state{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:2px;line-height:1;margin-bottom:8px}
+.m-intent-tabs{display:flex;border:1px solid rgba(255,255,255,.08);border-radius:4px;overflow:hidden;margin-bottom:10px}
+.m-itab{flex:1;padding:7px;background:none;border:none;color:#4a6080;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;cursor:pointer;transition:all .15s}
+.m-itab.act{background:rgba(0,255,157,.08);color:#00ff9d}
+.m-result-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px}
+.m-result-cell{padding:8px 10px;background:rgba(255,255,255,.025);border-radius:3px;border-left:2px solid rgba(255,255,255,.1)}
+.m-rcell-lbl{font-family:'IBM Plex Mono',monospace;font-size:6.5px;letter-spacing:1.5px;text-transform:uppercase;color:#4a6080;margin-bottom:2px}
+.m-rcell-val{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;line-height:1}
+.m-result-action{padding:9px 12px;border-radius:3px;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-align:center;margin-bottom:8px;border:1px solid}
+.m-result-why{font-size:10px;color:#8fa4c0;line-height:1.6}
+.m-why-line{padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.m-section{padding:14px 16px 0}
+.m-section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.m-section-title{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#4a6080}
+.m-section-count{font-family:'Bebas Neue',sans-serif;font-size:14px;color:#4a6080}
+.m-node-list{display:flex;flex-direction:column;gap:4px;padding-bottom:8px}
+.m-node{display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(6,13,26,.8);border:1px solid rgba(255,255,255,.05);border-radius:5px;cursor:pointer;transition:background .15s;active:background:rgba(255,255,255,.04)}
+.m-node-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.m-node-body{flex:1;min-width:0}
+.m-node-name{font-size:14px;font-weight:500;color:#e8edf5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-node-layer{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#4a6080;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.m-node-right{text-align:right;flex-shrink:0}
+.m-node-state{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.5px}
+.m-node-ent{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#4a6080;margin-top:1px}
+.m-horizon{padding:16px 16px 24px;border-top:1px solid rgba(255,255,255,.06);margin-top:8px}
+.m-hz-label{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#4a6080;margin-bottom:4px;text-align:center}
+.m-hz-val{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:#e8edf5;text-align:center;margin-bottom:12px}
+.m-hz-slider{width:100%;accent-color:#00ff9d;height:6px;cursor:pointer;display:block}
+.m-hz-ticks{display:flex;justify-content:space-between;margin-top:6px}
+.m-hz-tick{font-family:'IBM Plex Mono',monospace;font-size:7px;color:#4a6080}
+.m-footer{padding:20px 16px;text-align:center;border-top:1px solid rgba(255,255,255,.06)}
+.m-footer-brand{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;color:#4a6080}
+.m-footer-links{display:flex;gap:20px;justify-content:center;margin-top:8px}
+.m-footer-link{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1.5px;color:#4a6080;text-decoration:none}
+.m-backdrop{position:fixed;inset:0;z-index:199;background:rgba(0,0,0,.6);display:none}
+.m-backdrop.show{display:block}
+.m-drawer{position:fixed;left:0;right:0;bottom:0;z-index:200;background:#060d1a;border-top:1px solid rgba(255,255,255,.12);border-radius:16px 16px 0 0;transform:translateY(100%);transition:transform .28s cubic-bezier(.32,.72,0,1);max-height:72dvh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.m-drawer.open{transform:translateY(0)}
+.m-drawer-handle{width:40px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:12px auto 0}
+.m-drawer-close{position:absolute;top:14px;right:16px;background:none;border:1px solid rgba(255,255,255,.1);color:#4a6080;width:28px;height:28px;border-radius:4px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.m-drawer-body{padding:16px 18px 36px}
+.m-drawer-state{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:2px;line-height:1;margin-bottom:4px}
+.m-drawer-name{font-size:17px;font-weight:600;color:#e8edf5;margin-bottom:2px}
+.m-drawer-layer{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#4a6080;margin-bottom:16px}
+.m-drawer-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px}
+.m-drawer-cell{padding:9px 11px;background:rgba(255,255,255,.03);border-radius:4px;border-left:2px solid rgba(255,255,255,.1)}
+.m-drawer-cell-lbl{font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:2px;text-transform:uppercase;color:#4a6080;margin-bottom:3px}
+.m-drawer-cell-val{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;line-height:1}
+.m-drawer-action{padding:11px 14px;border-radius:4px;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-align:center;margin-bottom:12px;border:1px solid}
+.m-why{font-size:11px;color:#8fa4c0;line-height:1.6}
+.m-why-item{padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+</style>`;
+}
+
+function getMobileHTML() {
+  return `
+<div class="m-nav">
+  <div><div class="m-brand">NERVA</div><div class="m-brand-sub">Signal Intelligence · v9</div></div>
+  <button class="m-live-btn" id="m-live-btn" onclick="loadMobileData()">⬤ Live Data</button>
+</div>
+<div class="m-macro">
+  <div class="m-macro-item"><div class="m-macro-lbl">Global ψ</div><div class="m-macro-val" id="m-ent" style="color:#00ff9d">—</div></div>
+  <div class="m-macro-item"><div class="m-macro-lbl">Signal</div><div class="m-macro-val" id="m-sig" style="color:#e8edf5">—</div></div>
+  <div class="m-macro-item"><div class="m-macro-lbl">Toxic</div><div class="m-macro-val" id="m-tox" style="color:#ff1744">—</div></div>
+  <div class="m-macro-item"><div class="m-macro-lbl">Escalate</div><div class="m-macro-val" id="m-esc" style="color:#f97316">—</div></div>
+  <div class="m-macro-item"><div class="m-macro-lbl">Commit</div><div class="m-macro-val" id="m-com" style="color:#00ff9d">—</div></div>
+  <div class="m-macro-item"><div class="m-macro-lbl">Mortgage</div><div class="m-macro-val" id="m-mort" style="color:#fbbf24;font-size:16px">—</div></div>
+  <div class="m-macro-item"><div class="m-macro-lbl">WTI Oil</div><div class="m-macro-val" id="m-wti" style="color:#fbbf24;font-size:16px">—</div></div>
+</div>
+<div class="m-ticker"><div class="m-ticker-inner"><span class="m-ticker-dot"></span><span id="m-ticker-text">Tap Live Data to load signals…</span></div></div>
+<div class="m-search">
+  <div class="m-search-tabs">
+    <button class="m-stab act" id="m-stab-res" onclick="mSetSearchMode('residential')">🏠 Residential ZIP</button>
+    <button class="m-stab" id="m-stab-corp" onclick="mSetSearchMode('corporate')">🏢 Corporate RE</button>
+  </div>
+  <div id="m-res-row" class="m-search-row">
+    <input class="m-search-input" id="m-zip-input" type="text" inputmode="numeric" maxlength="5" placeholder="ZIP code (e.g. 07076)…" autocomplete="off">
+    <button class="m-search-btn" onclick="mobileSearchZIP()">⊛</button>
+  </div>
+  <div id="m-corp-row" class="m-corp-row" style="display:none">
+    <select class="m-corp-sel" id="m-corp-metro">
+      <option value="NYC">New York</option><option value="LA">Los Angeles</option>
+      <option value="Chicago">Chicago</option><option value="Dallas">Dallas</option>
+      <option value="Houston">Houston</option><option value="DC">Washington DC</option>
+      <option value="Miami">Miami</option><option value="Atlanta">Atlanta</option>
+      <option value="Boston">Boston</option><option value="Seattle">Seattle</option>
+      <option value="SF">San Francisco</option><option value="Austin">Austin</option>
+      <option value="Nashville">Nashville</option><option value="Charlotte">Charlotte</option>
+    </select>
+    <select class="m-corp-sel" id="m-corp-type" style="flex:none;width:132px">
+      <option value="office">Office</option><option value="multifamily">Multifamily</option>
+      <option value="industrial">Industrial</option><option value="retail">Retail</option>
+    </select>
+    <button class="m-search-btn" onclick="mobileSearchCorp()">⊛</button>
+  </div>
+</div>
+<div class="m-result" id="m-result">
+  <div class="m-result-head">
+    <div><div class="m-result-name" id="m-result-name">—</div><div class="m-result-sub" id="m-result-sub"></div></div>
+    <button class="m-result-close" onclick="closeMobileResult()">✕</button>
+  </div>
+  <div class="m-result-body" id="m-result-body"></div>
+</div>
+<div class="m-section">
+  <div class="m-section-hdr">
+    <div class="m-section-title">Top Signals · By Entropy</div>
+    <div class="m-section-count" id="m-node-count">—</div>
+  </div>
+  <div class="m-node-list" id="m-node-list">
+    <div style="text-align:center;padding:28px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#4a6080">Tap Live Data to load…</div>
+  </div>
+</div>
+<div class="m-horizon">
+  <div class="m-hz-label">Time Horizon</div>
+  <div class="m-hz-val" id="m-hz-val">72 Hours — Tactical Window</div>
+  <input class="m-hz-slider" type="range" id="m-hz-slider" min="0" max="5" step="1" value="1" oninput="mUpdateHorizon(this.value)">
+  <div class="m-hz-ticks">
+    <span class="m-hz-tick">24h</span><span class="m-hz-tick">72h</span><span class="m-hz-tick">30d</span>
+    <span class="m-hz-tick">6mo</span><span class="m-hz-tick">2yr</span><span class="m-hz-tick" style="color:rgba(192,132,252,.7)">10yr</span>
+  </div>
+</div>
+<div class="m-footer">
+  <div class="m-footer-brand">NERVA</div>
+  <div class="m-footer-links">
+    <a href="/nerva-docs.html" class="m-footer-link">API DOCS ↗</a>
+    <a href="https://github.com/CaptainMig/nerva-globe" target="_blank" class="m-footer-link">GITHUB ↗</a>
+  </div>
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:7px;color:#2a4060;margin-top:10px;letter-spacing:2px">STARPOINT ENTERPRISES LLC · AMDG</div>
+</div>
+<div class="m-backdrop" id="m-backdrop" onclick="closeDrawer()"></div>
+<div class="m-drawer" id="m-drawer">
+  <div class="m-drawer-handle"></div>
+  <button class="m-drawer-close" onclick="closeDrawer()">✕</button>
+  <div class="m-drawer-body" id="m-drawer-body"></div>
+</div>`;
+}
+
+const MC = { COMMIT:'#00ff9d', HOLD:'#fbbf24', WAIT:'#60a5fa', ESCALATE:'#f97316', TOXIC:'#ff1744' };
+const HZ_LABELS = ['24 Hours — Flash Crisis','72 Hours — Tactical Window','30 Days — Operational','6 Months — Strategic Arc','2 Years — Investment Cycle','10 Years — Civilizational'];
+const HZ_DECAY  = [1.0,0.92,0.80,0.65,0.50,0.35];
+let mHorizon=1, mSearchMode='residential', mIntentMode='live', mLastZIPResult=null, mLiveData={};
+
+function mUpdateHorizon(val){
+  mHorizon=parseInt(val);
+  document.getElementById('m-hz-val').textContent=HZ_LABELS[mHorizon];
+  renderMobileNodes();
+}
+
+function mSetSearchMode(mode){
+  mSearchMode=mode;
+  const isRes=mode==='residential';
+  document.getElementById('m-stab-res').className='m-stab'+(isRes?' act':'');
+  document.getElementById('m-stab-corp').className='m-stab'+(!isRes?' act':'');
+  document.getElementById('m-res-row').style.display=isRes?'flex':'none';
+  document.getElementById('m-corp-row').style.display=isRes?'none':'flex';
+  closeMobileResult();
+}
+
+function mSetIntent(mode){
+  mIntentMode=mode;
+  document.getElementById('m-itab-live').className='m-itab'+(mode==='live'?' act':'');
+  document.getElementById('m-itab-invest').className='m-itab'+(mode==='invest'?' act':'');
+  if(mLastZIPResult)renderMobileZIPResult(mLastZIPResult);
+}
+
+async function loadMobileData(){
+  const btn=document.getElementById('m-live-btn');
+  if(btn){btn.textContent='…';btn.style.opacity='.5';}
+  try{
+    const [noaaR,fredR,eiaR]=await Promise.allSettled([
+      ON_VERCEL?fetch('/api/noaa?severity=all').then(r=>r.json()).catch(()=>null):Promise.resolve(null),
+      ON_VERCEL?fetch('/api/fred').then(r=>r.json()).catch(()=>null):Promise.resolve(null),
+      ON_VERCEL?fetch('/api/energy?series=all').then(r=>r.json()).catch(()=>null):Promise.resolve(null),
+    ]);
+    const noaa=noaaR.value, fred=fredR.value, eia=eiaR.value;
+
+    if(noaa?.ok&&noaa.nodeMods){
+      Object.entries(noaa.nodeMods).forEach(([n,mod])=>{
+        if(mod.entDelta>0) LIVE_MODS[n]={entDelta:Math.min(0.95,mod.entDelta),liveReason:`NOAA: ${mod.events?.[0]||'alert'}`};
+      });
+    }
+    mLiveData={noaa,fred,eia};
+
+    // Mortgage rate
+    if(fred?.ok){
+      const mort=fred.data?.find(d=>d.series==='mortgage30');
+      if(mort?.value) document.getElementById('m-mort').textContent=mort.value.toFixed(2)+'%';
+    }
+    // WTI price
+    if(eia?.ok){
+      const wti=eia.series?.wti?.latest?.value;
+      if(wti) document.getElementById('m-wti').textContent='$'+Math.round(wti);
+    }
+    // Ticker
+    const parts=[];
+    if(noaa?.topSignal) parts.push(`🔴 ${noaa.topSignal.event} — ${noaa.topSignal.areas}`);
+    if(noaa?.count) parts.push(`${noaa.count} alerts (${noaa.extreme} extreme, ${noaa.severe} severe)`);
+    if(eia?.series?.wti) parts.push(`WTI $${eia.series.wti.latest.value.toFixed(0)}/bbl ${eia.series.wti.change.dayPct>0?'↑':'↓'}${Math.abs(eia.series.wti.change.dayPct).toFixed(1)}%`);
+    if(parts.length) document.getElementById('m-ticker-text').textContent=parts.join('  ·  ');
+
+    renderMobileNodes();
+  }catch(e){
+    document.getElementById('m-ticker-text').textContent='Live data unavailable — baseline signals shown';
+    renderMobileNodes();
+  }finally{
+    if(btn){btn.textContent='⬤ Live Data';btn.style.opacity='1';}
+  }
+}
+
+function renderMobileNodes(){
+  const decay=HZ_DECAY[mHorizon];
+  const computed=ALL_NODES.map(n=>{
+    const mod=LIVE_MODS[n.n]||{};
+    const ent=Math.min(0.92,Math.min(0.95,(n.entropy||0.5)+(mod.entDelta||0))*decay);
+    const state=ent<0.25?'COMMIT':ent<0.42?'HOLD':ent<0.60?'WAIT':ent<0.78?'ESCALATE':'TOXIC';
+    return {...n,ent,state,liveReason:mod.liveReason};
+  }).sort((a,b)=>{
+    const o={TOXIC:0,ESCALATE:1,WAIT:2,HOLD:3,COMMIT:4};
+    return (o[a.state]||5)-(o[b.state]||5)||b.ent-a.ent;
+  });
+
+  const tox=computed.filter(n=>n.state==='TOXIC').length;
+  const esc=computed.filter(n=>n.state==='ESCALATE').length;
+  const com=computed.filter(n=>n.state==='COMMIT').length;
+  const avgEnt=computed.reduce((s,n)=>s+n.ent,0)/Math.max(computed.length,1);
+  document.getElementById('m-ent').textContent=avgEnt.toFixed(3);
+  document.getElementById('m-sig').textContent=Math.round((1-avgEnt)*100)+'%';
+  document.getElementById('m-tox').textContent=tox;
+  document.getElementById('m-esc').textContent=esc;
+  document.getElementById('m-com').textContent=com;
+  document.getElementById('m-node-count').textContent=computed.length+'/'+ALL_NODES.length;
+
+  const top=computed.slice(0,35);
+  document.getElementById('m-node-list').innerHTML=top.map(n=>{
+    const col=MC[n.state]||'#fff';
+    const layerInfo=(LAYERS||{})[n.layer]||{l:n.layer,c:'#4a6080'};
+    const nd=JSON.stringify({n:n.n,ent:n.ent,state:n.state,layer:n.layer,entropy:n.entropy,why:n.why||[],liveReason:n.liveReason||''});
+    return `<div class="m-node" onclick='openDrawer(${nd.replace(/'/g,"&#39;")})'>
+      <div class="m-node-dot" style="background:${col};box-shadow:0 0 6px ${col}40"></div>
+      <div class="m-node-body">
+        <div class="m-node-name">${n.n}</div>
+        <div class="m-node-layer" style="color:${layerInfo.c}">${layerInfo.l||n.layer}</div>
+      </div>
+      <div class="m-node-right">
+        <div class="m-node-state" style="color:${col}">${n.state}</div>
+        <div class="m-node-ent">ψ ${n.ent.toFixed(3)}</div>
+      </div>
+    </div>`;
+  }).join('')||'<div style="padding:24px;text-align:center;font-family:\'IBM Plex Mono\',monospace;font-size:10px;color:#4a6080">No nodes</div>';
+}
+
+function openDrawer(node){
+  const col=MC[node.state]||'#fff';
+  const layerInfo=(LAYERS||{})[node.layer]||{l:node.layer,c:'#4a6080'};
+  const sig=Math.round((1-node.ent)*100);
+  const whyHtml=(node.why||[]).map(w=>`<div class="m-why-item">· ${w}</div>`).join('');
+  const liveNote=node.liveReason?`<div style="margin-top:8px;padding:7px 10px;background:rgba(251,191,36,.06);border-radius:3px;font-family:'IBM Plex Mono',monospace;font-size:8px;color:#fbbf24;letter-spacing:1px">${node.liveReason}</div>`:'';
+
+  document.getElementById('m-drawer-body').innerHTML=`
+    <div class="m-drawer-state" style="color:${col}">${node.state}</div>
+    <div class="m-drawer-name">${node.n}</div>
+    <div class="m-drawer-layer" style="color:${layerInfo.c}">${layerInfo.l||node.layer}</div>
+    <div class="m-drawer-grid">
+      <div class="m-drawer-cell" style="border-color:${col}"><div class="m-drawer-cell-lbl">Signal</div><div class="m-drawer-cell-val" style="color:${col}">${sig}%</div></div>
+      <div class="m-drawer-cell" style="border-color:rgba(255,255,255,.1)"><div class="m-drawer-cell-lbl">Entropy ψ</div><div class="m-drawer-cell-val">${node.ent.toFixed(3)}</div></div>
+      <div class="m-drawer-cell" style="border-color:rgba(255,255,255,.1)"><div class="m-drawer-cell-lbl">Coherence</div><div class="m-drawer-cell-val">${(1-node.ent).toFixed(3)}</div></div>
+      <div class="m-drawer-cell" style="border-color:rgba(255,255,255,.1)"><div class="m-drawer-cell-lbl">Horizon</div><div class="m-drawer-cell-val" style="font-size:13px;color:#8fa4c0">${HZ_LABELS[mHorizon].split(' — ')[0]}</div></div>
+    </div>
+    <div class="m-drawer-action" style="color:${col};border-color:${col}40;background:${col}10">
+      ${node.state==='COMMIT'?'Act with confidence — signal coherent'
+        :node.state==='HOLD'?'Monitor — position for entry'
+        :node.state==='WAIT'?'Two-way risk — observe only'
+        :node.state==='ESCALATE'?'Reduce exposure — coherence degrading'
+        :'Stand aside — noise dominates'}
+    </div>
+    ${whyHtml?`<div class="m-why">${whyHtml}</div>`:''}
+    ${liveNote}`;
+
+  document.getElementById('m-drawer').classList.add('open');
+  document.getElementById('m-backdrop').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+
+function closeDrawer(){
+  document.getElementById('m-drawer').classList.remove('open');
+  document.getElementById('m-backdrop').classList.remove('show');
+  document.body.style.overflow='';
+}
+
+async function mobileSearchZIP(){
+  const input=document.getElementById('m-zip-input');
+  const btn=document.querySelector('#m-res-row .m-search-btn');
+  const zip=input.value.trim();
+  if(!/^\d{5}$/.test(zip)){input.style.borderColor='#ff1744';setTimeout(()=>input.style.borderColor='',1500);return;}
+  input.style.borderColor='#fbbf24';
+  btn.textContent='…';
+  try{
+    const res=await fetch(`/api/census?zip=${zip}`,{signal:AbortSignal.timeout(12000)});
+    const data=await res.json();
+    if(!data.ok||!data.results?.length)throw new Error('No Census data for this ZIP');
+    mLastZIPResult=data.results[0];
+    renderMobileZIPResult(mLastZIPResult);
+    input.style.borderColor='rgba(0,255,157,.4)';
+  }catch(e){
+    document.getElementById('m-result-name').textContent='No data found';
+    document.getElementById('m-result-sub').textContent=e.message;
+    document.getElementById('m-result-body').innerHTML=`<div style="font-size:11px;color:#4a6080;padding:8px 0">Try a different ZIP.</div>`;
+    document.getElementById('m-result').classList.add('vis');
+    input.style.borderColor='#ff1744';
+  }finally{btn.textContent='⊛';}
+}
+
+function renderMobileZIPResult(r){
+  const isLive=mIntentMode==='live';
+  const liveScore=r.metrics.affordabilityIndex*0.6+(1-r.nerva.entropy)*100*0.4;
+  const liveState=liveScore>72?'COMMIT':liveScore>55?'HOLD':liveScore>38?'WAIT':'ESCALATE';
+  const displayState=isLive?liveState:r.nerva.state;
+  const col=MC[displayState]||'#fff';
+  const affColor=r.metrics.affordabilityIndex>60?'#00ff9d':r.metrics.affordabilityIndex>35?'#fbbf24':'#ff1744';
+  const evColor=r.nerva.evGate?'#00ff9d':'#ff1744';
+
+  document.getElementById('m-result-name').textContent=r.name;
+  document.getElementById('m-result-name').style.color=col;
+  document.getElementById('m-result-sub').textContent=`ZIP ${r.geoId||''} · Census ACS 2022`;
+  document.getElementById('m-result-body').innerHTML=`
+    <div class="m-intent-tabs">
+      <button class="m-itab${isLive?' act':''}" id="m-itab-live" onclick="mSetIntent('live')">🏠 Buy to Live</button>
+      <button class="m-itab${!isLive?' act':''}" id="m-itab-invest" onclick="mSetIntent('invest')">💼 Buy to Invest</button>
+    </div>
+    <div class="m-result-state" style="color:${col}">${displayState}</div>
+    <div class="m-result-grid">
+      <div class="m-result-cell" style="border-color:${col}"><div class="m-rcell-lbl">Signal</div><div class="m-rcell-val" style="color:${col}">${r.nerva.signal.toFixed(0)}%</div></div>
+      <div class="m-result-cell" style="border-color:rgba(255,255,255,.1)"><div class="m-rcell-lbl">Home Value</div><div class="m-rcell-val">${r.formatted.homeValue}</div></div>
+      <div class="m-result-cell" style="border-color:rgba(255,255,255,.1)"><div class="m-rcell-lbl">${isLive?'Income':'Rent/mo'}</div><div class="m-rcell-val">${isLive?r.formatted.income:r.formatted.rent}</div></div>
+      <div class="m-result-cell" style="border-color:${affColor}"><div class="m-rcell-lbl">Affordability</div><div class="m-rcell-val" style="color:${affColor}">${r.metrics.affordabilityIndex}/100</div></div>
+      ${isLive
+        ?`<div class="m-result-cell" style="border-color:rgba(255,255,255,.1)"><div class="m-rcell-lbl">P/I Ratio</div><div class="m-rcell-val">${r.metrics.priceToIncome}x</div></div>`
+        :`<div class="m-result-cell" style="border-color:${evColor}"><div class="m-rcell-lbl">EV Gate</div><div class="m-rcell-val" style="color:${evColor}">${r.nerva.evGate?'PASS ✓':'FAIL ✗'}</div></div>`}
+      <div class="m-result-cell" style="border-color:rgba(255,255,255,.1)"><div class="m-rcell-lbl">Rent Yield</div><div class="m-rcell-val">${r.formatted.rentYield}</div></div>
+    </div>
+    <div class="m-result-action" style="color:${col};border-color:${col}40;background:${col}10">
+      ${isLive
+        ?(displayState==='COMMIT'?`BUY TO OWN — P/I ${r.metrics.priceToIncome}x is attractive`
+          :displayState==='HOLD'?`WATCH — good market, monitor rates`
+          :`WAIT — stretched at ${r.metrics.priceToIncome}x income`)
+        :r.nerva.action}
+    </div>
+    ${!isLive&&!r.nerva.evGate?`<div style="padding:8px 10px;background:rgba(255,23,68,.06);border:1px solid rgba(255,23,68,.2);border-radius:3px;font-size:10px;color:#8fa4c0;line-height:1.5;margin-bottom:8px"><strong style="color:#ff1744">EV Gate FAIL:</strong> ${r.formatted.homeValue} home · ${r.formatted.rent}/mo rent · ${r.formatted.rentYield} yield — below 4.5% break-even.</div>`:''}
+    <div style="font-size:9px;color:#4a6080;font-family:'IBM Plex Mono',monospace">ψ ${r.nerva.entropy.toFixed(3)} · Vacancy ${((r.metrics.vacancyRate||0)*100).toFixed(0)}%</div>`;
+  document.getElementById('m-result').classList.add('vis');
+}
+
+async function mobileSearchCorp(){
+  const metro=document.getElementById('m-corp-metro').value;
+  const type=document.getElementById('m-corp-type').value;
+  const btn=document.querySelector('#m-corp-row .m-search-btn');
+  btn.textContent='…';
+  try{
+    const res=await fetch(`/api/corporate?metro=${metro}&type=${type}`,{signal:AbortSignal.timeout(10000)});
+    const data=await res.json();
+    if(!data.ok)throw new Error(data.error||'No data');
+    const n=data.nerva,m=data.market;
+    const col=MC[n.state]||'#fff';
+    const typeLabels={office:'Office',multifamily:'Multifamily',industrial:'Industrial',retail:'Retail'};
+    document.getElementById('m-result-name').textContent=`${data.metro} ${typeLabels[data.type]||data.type}`;
+    document.getElementById('m-result-name').style.color=col;
+    document.getElementById('m-result-sub').textContent=`Corporate RE · ${data.dataAge}`;
+    document.getElementById('m-result-body').innerHTML=`
+      <div class="m-result-state" style="color:${col}">${n.state}</div>
+      <div class="m-result-grid">
+        <div class="m-result-cell" style="border-color:${col}"><div class="m-rcell-lbl">Signal</div><div class="m-rcell-val" style="color:${col}">${n.signal.toFixed(0)}%</div></div>
+        <div class="m-result-cell" style="border-color:${m.vacancy>0.20?'#ff1744':'#00ff9d'}"><div class="m-rcell-lbl">Vacancy</div><div class="m-rcell-val" style="color:${m.vacancy>0.20?'#ff1744':m.vacancy>0.12?'#f97316':'#00ff9d'}">${m.vacancyPct}</div></div>
+        <div class="m-result-cell" style="border-color:rgba(255,255,255,.1)"><div class="m-rcell-lbl">Cap Rate</div><div class="m-rcell-val">${m.capRatePct}</div></div>
+        <div class="m-result-cell" style="border-color:${n.evGate?'#00ff9d':'#ff1744'}"><div class="m-rcell-lbl">EV Gate</div><div class="m-rcell-val" style="color:${n.evGate?'#00ff9d':'#ff1744'}">${n.evGate?'PASS':'FAIL'}</div></div>
+        <div class="m-result-cell" style="border-color:rgba(255,255,255,.1)"><div class="m-rcell-lbl">Avg Lease</div><div class="m-rcell-val">${m.avgLeaseTerm}yr</div></div>
+        <div class="m-result-cell" style="border-color:rgba(255,255,255,.1)"><div class="m-rcell-lbl">DSCR</div><div class="m-rcell-val" style="color:${m.dscr>1.25?'#00ff9d':m.dscr>1?'#fbbf24':'#ff1744'}">${m.dscr}x</div></div>
+      </div>
+      <div class="m-result-action" style="color:${col};border-color:${col}40;background:${col}10">${n.action}</div>
+      <div class="m-result-why">${(n.why||[]).map(w=>`<div class="m-why-line">· ${w}</div>`).join('')}</div>`;
+    document.getElementById('m-result').classList.add('vis');
+  }catch(e){
+    document.getElementById('m-result-body').innerHTML=`<div style="font-size:11px;color:#4a6080">${e.message}</div>`;
+    document.getElementById('m-result').classList.add('vis');
+  }finally{btn.textContent='⊛';}
+}
+
+function closeMobileResult(){
+  document.getElementById('m-result').classList.remove('vis');
+  const zi=document.getElementById('m-zip-input');
+  if(zi){zi.value='';zi.style.borderColor='';}
+  mLastZIPResult=null;
+}
 </script>
+<!-- Mobile detail backdrop -->
+<div id="dp-backdrop" onclick="closeDetail()" style="display:none;position:fixed;inset:0;z-index:149;background:rgba(0,0,0,.5);-webkit-tap-highlight-color:transparent"></div>
 </body>
 </html>
