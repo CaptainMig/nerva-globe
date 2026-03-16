@@ -90,14 +90,12 @@ export default async function handler(req, res) {
   } = req.query;
 
   try {
-    // NOAA API v3 — minimal params only, no encoding issues
-    const limitN = Math.min(parseInt(limit) || 30, 100);
+    // NOAA API v3 — only supported params: area, severity, status
     let noaaUrl = `${NOAA_BASE}/alerts/active`;
-    const qp = [];
+    const qp = ['status=actual'];
     if (state) qp.push(`area=${state.toUpperCase()}`);
     if (severity === 'high') qp.push('severity=Extreme&severity=Severe');
-    qp.push(`limit=${limitN}`);
-    if (qp.length) noaaUrl += '?' + qp.join('&');
+    noaaUrl += '?' + qp.join('&');
     const url = new URL(noaaUrl);
 
     const response = await fetch(url.toString(), {
