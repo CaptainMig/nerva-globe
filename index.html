@@ -3322,7 +3322,7 @@ async function fetchMapLiveData(){
 
   mapLiveLoaded=true;
   if(!ON_VERCEL){
-    document.getElementById('mlb-status').textContent=`Map data updated ${new Date().toLocaleTimeString()} · Deploy to Vercel for FRED + Zillow data`;
+    document.getElementById('mlb-status').textContent=`Map data updated ${new Date().toLocaleTimeString()} · Deploy to Vercel for FRED + Realty data`;
   }
 
   if(mapboxMap)populateMapMarkers();
@@ -3480,10 +3480,11 @@ async function searchZIP() {
     renderZIPResult(result);
     input.style.borderColor = 'rgba(0,255,157,.4)';
 
-    // Also place marker on map if visible
-    if (mapboxMap && typeof maplibregl !== 'undefined' && result.geoId) {
-      // Fly to ZIP centroid (approximate using geocoding or just show result card)
-    }
+    // Geocode ZIP → lat/lng via Nominatim, then fly the map
+    flyMapToZIP(zip, result);
+
+    // Fetch Realty live listings in parallel and enrich the result card
+    fetchRealtyForZIP(zip, result);
 
   } catch (e) {
     input.style.borderColor = 'var(--toxic)';
@@ -3497,46 +3498,136 @@ async function searchZIP() {
   }
 }
 
+// Current intent mode — persists across searches
+let zipIntentMode = 'live'; // 'live' = buy to own, 'invest' = buy to rent/invest
+
+function setZIPIntent(mode) {
+  zipIntentMode = mode;
+  // Re-render with current result if one exists
+  if (window._lastZIPResult) renderZIPResult(window._lastZIPResult);
+}
+
 function renderZIPResult(r) {
+  window._lastZIPResult = r; // store for re-render on mode switch
+
   const col = SC[r.nerva.state] || SC.HOLD;
-  const hex = '#' + [col.r, col.g, col.b].map(v => Math.round(v*255).toString(16).padStart(2,'0')).join('');
+  const hex = '#' + [col.r,col.g,col.b].map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('');
   const affColor = r.metrics.affordabilityIndex > 60 ? 'var(--commit)' : r.metrics.affordabilityIndex > 35 ? 'var(--hold)' : 'var(--toxic)';
 
+  // Compute intent-specific state and action
+  const isLive = zipIntentMode === 'live';
+
+  // Buy-to-Live signal: weighted toward affordability + stability
+  // Buy-to-Invest signal: weighted toward yield + EV gate
+  let displayState = r.nerva.state;
+  let displayAction = r.nerva.action;
+  let displayHex = hex;
+
+  if (isLive) {
+    // For homebuyers: re-weight signal toward affordability
+    // If EV gate fails but affordability is strong, that's fine — they're not renting it
+    const liveScore = (r.metrics.affordabilityIndex * 0.6) + ((1 - r.nerva.entropy) * 100 * 0.4);
+    displayState = liveScore > 72 ? 'COMMIT' : liveScore > 55 ? 'HOLD' : liveScore > 38 ? 'WAIT' : 'ESCALATE';
+    const liveCol = SC[displayState] || SC.HOLD;
+    displayHex = '#' + [liveCol.r,liveCol.g,liveCol.b].map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('');
+
+    const pti = r.metrics.priceToIncome;
+    displayAction = displayState === 'COMMIT'
+      ? `BUY TO OWN — Strong fundamentals. P/I ${pti.toFixed(1)}x is attractive for a primary residence.`
+      : displayState === 'HOLD'
+      ? `WATCH — Good market, timing matters. Monitor rates and inventory before committing.`
+      : displayState === 'WAIT'
+      ? `WAIT — Affordability stretched at ${pti.toFixed(1)}x income. Better entry likely ahead.`
+      : `CAUTION — P/I ${pti.toFixed(1)}x creates long-term affordability risk as a primary home.`;
+  } else {
+    // Investor mode: EV gate is central
+    displayAction = r.nerva.evGate
+      ? `BUY TO RENT — EV gate PASS. ${r.formatted.rentYield} yield supports positive cash flow.`
+      : `AVOID AS RENTAL — EV gate FAIL. ${r.formatted.rentYield} yield below 4.5% threshold needed for positive cash flow at current prices and mortgage rates.`;
+  }
+
   document.getElementById('zr-name').textContent = r.name;
-  document.getElementById('zr-name').style.color = hex;
-  document.getElementById('zr-sub').textContent = `ZIP ${r.geoId || ''} · Census ACS 2022 · NERVA Signal`;
+  document.getElementById('zr-name').style.color = displayHex;
+  document.getElementById('zr-sub').textContent = `ZIP ${r.geoId||''} · Census ACS 2022 · NERVA Signal`;
+
+  // Intent toggle
+  const intentToggle = `
+    <div style="display:flex;gap:0;margin-bottom:12px;border:1px solid var(--border);border-radius:4px;overflow:hidden">
+      <button onclick="setZIPIntent('live')" style="flex:1;padding:5px 8px;background:${isLive?'rgba(0,255,157,.1)':'none'};border:none;border-right:1px solid var(--border);color:${isLive?'var(--commit)':'var(--t3)'};font-family:'IBM Plex Mono',monospace;font-size:7.5px;letter-spacing:1px;cursor:pointer;transition:all .2s;font-weight:${isLive?'700':'400'}">
+        🏠 Buy to Live
+      </button>
+      <button onclick="setZIPIntent('invest')" style="flex:1;padding:5px 8px;background:${!isLive?'rgba(251,191,36,.08)':'none'};border:none;color:${!isLive?'var(--hold)':'var(--t3)'};font-family:'IBM Plex Mono',monospace;font-size:7.5px;letter-spacing:1px;cursor:pointer;transition:all .2s;font-weight:${!isLive?'700':'400'}">
+        💼 Buy to Invest
+      </button>
+    </div>`;
+
+  // Data grid — different cells per mode
+  const liveGrid = `
+    <div class="zr-cell" style="border-color:${displayHex}">
+      <div class="zr-cell-lbl">Signal</div>
+      <div class="zr-cell-val" style="color:${displayHex}">${r.nerva.signal.toFixed(0)}%</div>
+    </div>
+    <div class="zr-cell" style="border-color:var(--t3)">
+      <div class="zr-cell-lbl">Home Value</div>
+      <div class="zr-cell-val" style="color:var(--t2)">${r.formatted.homeValue}</div>
+    </div>
+    <div class="zr-cell" style="border-color:var(--t3)">
+      <div class="zr-cell-lbl">Median Income</div>
+      <div class="zr-cell-val" style="color:var(--t2)">${r.formatted.income}</div>
+    </div>
+    <div class="zr-cell" style="border-color:var(--t3)">
+      <div class="zr-cell-lbl">P/I Ratio</div>
+      <div class="zr-cell-val" style="color:${r.metrics.priceToIncome<4?'var(--commit)':r.metrics.priceToIncome<6?'var(--hold)':'var(--toxic)'}">${r.metrics.priceToIncome}x</div>
+    </div>
+    <div class="zr-cell" style="border-color:${affColor}">
+      <div class="zr-cell-lbl">Affordability</div>
+      <div class="zr-cell-val" style="color:${affColor}">${r.metrics.affordabilityIndex}/100</div>
+    </div>
+    <div class="zr-cell" style="border-color:${r.metrics.ownershipRate>0.7?'var(--commit)':'var(--t3)'}">
+      <div class="zr-cell-lbl">Owner Rate</div>
+      <div class="zr-cell-val" style="color:var(--t2)">${((r.metrics.ownershipRate||0)*100).toFixed(0)}%</div>
+    </div>`;
+
+  const investGrid = `
+    <div class="zr-cell" style="border-color:${displayHex}">
+      <div class="zr-cell-lbl">Signal</div>
+      <div class="zr-cell-val" style="color:${displayHex}">${r.nerva.signal.toFixed(0)}%</div>
+    </div>
+    <div class="zr-cell" style="border-color:var(--t3)">
+      <div class="zr-cell-lbl">Home Value</div>
+      <div class="zr-cell-val" style="color:var(--t2)">${r.formatted.homeValue}</div>
+    </div>
+    <div class="zr-cell" style="border-color:var(--t3)">
+      <div class="zr-cell-lbl">Median Rent</div>
+      <div class="zr-cell-val" style="color:var(--t2)">${r.formatted.rent}</div>
+    </div>
+    <div class="zr-cell" style="border-color:var(--t3)">
+      <div class="zr-cell-lbl">Rent Yield</div>
+      <div class="zr-cell-val" style="color:${r.nerva.evGate?'var(--commit)':'var(--toxic)'}">${r.formatted.rentYield}</div>
+    </div>
+    <div class="zr-cell" style="border-color:${affColor}">
+      <div class="zr-cell-lbl">Affordability</div>
+      <div class="zr-cell-val" style="color:${affColor}">${r.metrics.affordabilityIndex}/100</div>
+    </div>
+    <div class="zr-cell" style="border-color:${r.nerva.evGate?'var(--commit)':'var(--toxic)'}">
+      <div class="zr-cell-lbl">EV Gate</div>
+      <div class="zr-cell-val" style="color:${r.nerva.evGate?'var(--commit)':'var(--toxic)'}">${r.nerva.evGate?'PASS ✓':'FAIL ✗'}</div>
+    </div>`;
+
+  // Why bullets — context-aware per mode
+  const liveWhy = (r.nerva.why||[]).filter(w =>
+    !w.includes('yield') && !w.includes('EV threshold')
+  );
+  const investWhy = r.nerva.why||[];
 
   document.getElementById('zr-body').innerHTML = `
-    <div class="zr-state" style="color:${hex}">${r.nerva.state}</div>
-    <div class="zr-grid">
-      <div class="zr-cell" style="border-color:${hex}">
-        <div class="zr-cell-lbl">Signal</div>
-        <div class="zr-cell-val" style="color:${hex}">${r.nerva.signal.toFixed(0)}%</div>
-      </div>
-      <div class="zr-cell" style="border-color:var(--t3)">
-        <div class="zr-cell-lbl">Home Value</div>
-        <div class="zr-cell-val" style="color:var(--t2)">${r.formatted.homeValue}</div>
-      </div>
-      <div class="zr-cell" style="border-color:var(--t3)">
-        <div class="zr-cell-lbl">Median Income</div>
-        <div class="zr-cell-val" style="color:var(--t2)">${r.formatted.income}</div>
-      </div>
-      <div class="zr-cell" style="border-color:var(--t3)">
-        <div class="zr-cell-lbl">Median Rent</div>
-        <div class="zr-cell-val" style="color:var(--t2)">${r.formatted.rent}</div>
-      </div>
-      <div class="zr-cell" style="border-color:${affColor}">
-        <div class="zr-cell-lbl">Affordability</div>
-        <div class="zr-cell-val" style="color:${affColor}">${r.metrics.affordabilityIndex}/100</div>
-      </div>
-      <div class="zr-cell" style="border-color:${r.nerva.evGate?'var(--commit)':'var(--toxic)'}">
-        <div class="zr-cell-lbl">EV Gate</div>
-        <div class="zr-cell-val" style="color:${r.nerva.evGate?'var(--commit)':'var(--toxic)'}">${r.nerva.evGate?'PASS':'FAIL'}</div>
-      </div>
-    </div>
-    <div class="zr-action" style="color:${hex};border-color:${hex}40;background:${hex}10">${r.nerva.action}</div>
-    ${r.nerva.why.length ? `<div class="zr-why">${r.nerva.why.map(w=>`<div class="zr-why-item">· ${w}</div>`).join('')}</div>` : ''}
-    <div style="margin-top:10px;font-size:7px;color:var(--t3);letter-spacing:1px">P/I RATIO: ${r.metrics.priceToIncome}x · ψ ${r.nerva.entropy.toFixed(3)} · Rent yield: ${r.formatted.rentYield}</div>`;
+    ${intentToggle}
+    <div class="zr-state" style="color:${displayHex}">${displayState}</div>
+    <div class="zr-grid">${isLive ? liveGrid : investGrid}</div>
+    <div class="zr-action" style="color:${displayHex};border-color:${displayHex}40;background:${displayHex}10">${displayAction}</div>
+    ${(isLive?liveWhy:investWhy).length ? `<div class="zr-why">${(isLive?liveWhy:investWhy).map(w=>`<div class="zr-why-item">· ${w}</div>`).join('')}</div>` : ''}
+    ${!isLive && !r.nerva.evGate ? `<div style="margin-top:6px;padding:6px 9px;background:rgba(255,23,68,.06);border:1px solid rgba(255,23,68,.2);border-radius:3px;font-size:8px;color:var(--t2);line-height:1.5;font-family:'IBM Plex Sans',sans-serif"><strong style="color:var(--toxic)">Why EV Gate failed:</strong> At ${r.formatted.homeValue} and ${r.formatted.rent}/mo rent, the gross yield is ${r.formatted.rentYield}. After mortgage, taxes, insurance, and maintenance, cash flow is likely negative. The 4.5% threshold is the minimum for break-even at current rates.</div>` : ''}
+    <div style="margin-top:10px;font-size:7px;color:var(--t3);letter-spacing:1px">P/I: ${r.metrics.priceToIncome}x · ψ ${r.nerva.entropy.toFixed(3)} · Vacancy: ${((r.metrics.vacancyRate||0)*100).toFixed(0)}%</div>`;
 
   document.getElementById('zip-result').classList.add('vis');
 }
@@ -3546,6 +3637,102 @@ function closeZIPResult() {
   document.getElementById('zip-input').value = '';
   document.getElementById('zip-input').style.borderColor = '';
 }
+
+// ── Nominatim geocoding: ZIP → lat/lng → fly map ──
+async function flyMapToZIP(zip, result) {
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?postalcode=${zip}&country=US&format=json&limit=1`;
+    const res = await fetch(url, {
+      headers: { 'User-Agent': 'NERVAGlobe/1.0 (nerva-globe.vercel.app)' },
+      signal: AbortSignal.timeout(6000),
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data.length) return;
+
+    const lat = parseFloat(data[0].lat);
+    const lng = parseFloat(data[0].lon);
+    if (!isFinite(lat) || !isFinite(lng)) return;
+
+    // Store coords on result for marker use
+    result._lat = lat;
+    result._lng = lng;
+
+    // Fly MapLibre map to ZIP
+    if (mapboxMap) {
+      mapboxMap.flyTo({ center: [lng, lat], zoom: 12, duration: 1200, essential: true });
+    }
+
+    // Add a NERVA-colored marker at the ZIP centroid
+    if (mapboxMap && typeof maplibregl !== 'undefined') {
+      // Remove previous ZIP marker if any
+      if (window._zipMarker) { window._zipMarker.remove(); }
+      const col = SC[result.nerva?.state] || SC.HOLD;
+      const hex = '#' + [col.r,col.g,col.b].map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('');
+      const el = document.createElement('div');
+      el.style.cssText = `width:18px;height:18px;border-radius:50%;background:${hex};border:3px solid white;box-shadow:0 0 16px ${hex};cursor:pointer`;
+      el.title = `ZIP ${zip} — ${result.nerva?.state}`;
+      window._zipMarker = new maplibregl.Marker({ element: el, anchor: 'center' })
+        .setLngLat([lng, lat])
+        .addTo(mapboxMap);
+    }
+  } catch(e) { /* geocoding optional */ }
+}
+
+// ── Realty enrichment: pulls live listing data for the ZIP ──
+async function fetchRealtyForZIP(zip, censusResult) {
+  if (!ON_VERCEL) return; // Realty API key is server-side only
+  try {
+    const res = await fetch(`/api/realty?zip=${zip}`, {
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data.ok || !data.market) return;
+
+    // Enrich the result card with live Realty data
+    enrichZIPWithRealty(data, censusResult);
+  } catch(e) { /* Realty optional */ }
+}
+
+function enrichZIPWithRealty(realtyData, censusResult) {
+  const body = document.getElementById('zr-body');
+  if (!body) return;
+
+  const m = realtyData.market;
+  const n = realtyData.nerva;
+  const props = realtyData.properties || [];
+
+  // Add Realty section to existing card
+  const zilSection = document.createElement('div');
+  zilSection.style.cssText = 'margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06)';
+  zilSection.innerHTML = `
+    <div style="font-size:6.5px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:8px">⬤ Realty Live · ${m.listingCount} active listings</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:8px">
+      <div style="padding:5px 7px;background:rgba(255,255,255,.012);border-radius:3px">
+        <div style="font-size:6px;letter-spacing:1.5px;text-transform:uppercase;opacity:.5;margin-bottom:2px">Median List</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--t2)">$${(m.medianPrice/1000).toFixed(0)}K</div>
+      </div>
+      <div style="padding:5px 7px;background:rgba(255,255,255,.012);border-radius:3px">
+        <div style="font-size:6px;letter-spacing:1.5px;text-transform:uppercase;opacity:.5;margin-bottom:2px">Median DOM</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--t2)">${m.medianDOM}d</div>
+      </div>
+      <div style="padding:5px 7px;background:rgba(255,255,255,.012);border-radius:3px">
+        <div style="font-size:6px;letter-spacing:1.5px;text-transform:uppercase;opacity:.5;margin-bottom:2px">NERVA ψ</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--hold)">${n?.entropy?.toFixed(3)||'—'}</div>
+      </div>
+    </div>
+    ${props.slice(0,3).map(p=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 8px;margin-bottom:3px;background:rgba(255,255,255,.015);border-radius:3px;font-size:8px">
+        <span style="color:var(--t2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.address||'—'}</span>
+        <span style="color:var(--t1);font-family:'Bebas Neue',sans-serif;font-size:11px;margin-left:8px;flex-shrink:0">$${((p.price||0)/1000).toFixed(0)}K</span>
+        <span style="color:var(--t3);font-size:7px;margin-left:6px;flex-shrink:0">${p.beds||'?'}bd · ${p.daysOnMarket||'?'}d</span>
+      </div>`).join('')}
+    <div style="font-size:7px;color:var(--t3);margin-top:6px;text-align:right">Source: Realty.com · ${new Date().toLocaleDateString()} · ${m.velocity||""}</div>`;
+
+  body.appendChild(zilSection);
+}
+
 
 // ── Boot ──
 initGL();
