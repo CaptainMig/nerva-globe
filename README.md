@@ -1,7 +1,7 @@
 # NERVA Globe
 ### Signal Intelligence Surface · v9
 
-**[nerva-globe.vercel.app](https://nerva-globe.vercel.app)**
+**[nerva-globe.vercel.app](https://nerva-globe.vercel.app)** · **[API Docs](https://nerva-globe.vercel.app/nerva-docs.html)**
 
 > *A quantum-inspired decision engine that reads where the world is coherent, where it is unstable, and where acting on the signal would be a mistake.*
 
