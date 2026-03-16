@@ -2231,28 +2231,171 @@ function getNodeState(n){
 }
 
 // ── Master fetch ──
+// ════════════════════════════════════════════════════════════════
+// NERVA API LAYER — calls /api/* serverless functions on Vercel
+// Falls back gracefully when running as local file
+// ════════════════════════════════════════════════════════════════
+
+// Detect if we're running on Vercel (has serverless functions)
+// vs opening as a local HTML file (no /api/* endpoints)
+const ON_VERCEL = window.location.hostname !== 'localhost' &&
+  window.location.protocol !== 'file:' &&
+  !window.location.hostname.includes('127.0.0.1');
+
+async function callAPI(endpoint, params = {}) {
+  const url = new URL('/api/' + endpoint, window.location.origin);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  const res = await fetch(url.toString(), { signal: AbortSignal.timeout(8000) });
+  if (!res.ok) throw new Error(`/api/${endpoint} returned ${res.status}`);
+  return res.json();
+}
+
+async function fetchFRED() {
+  if (!ON_VERCEL) return null;
+  try {
+    // Fetch 4 key series in parallel
+    const [mortgage, fedFunds, cpi, caseshiller] = await Promise.allSettled([
+      callAPI('fred', { series: 'mortgage30' }),
+      callAPI('fred', { series: 'fedFunds' }),
+      callAPI('fred', { series: 'cpi' }),
+      callAPI('fred', { series: 'caseshiller' }),
+    ]);
+
+    let fredSummary = [];
+
+    [mortgage, fedFunds, cpi, caseshiller].forEach(result => {
+      if (result.status !== 'fulfilled' || !result.value?.ok) return;
+      const d = result.value;
+
+      // Apply entDelta to all nodes in the affected layers
+      if (d.nerva.entDelta !== 0) {
+        const nodes = [...NODES, ...RE_NODES];
+        nodes.forEach(n => {
+          if (d.nerva.affects.includes(n.layer)) {
+            LIVE_MODS[n.n] = {
+              ...(LIVE_MODS[n.n] || {}),
+              entDelta: (LIVE_MODS[n.n]?.entDelta || 0) + d.nerva.entDelta,
+              liveReason: d.nerva.note,
+            };
+          }
+        });
+      }
+
+      fredSummary.push(`${d.name}: ${d.latest.formatted}`);
+    });
+
+    // Show FRED data in live event feed
+    if (fredSummary.length) {
+      addLiveEvent(`📊 FRED — ${fredSummary.join(' · ')}`, 'var(--hold)');
+    }
+
+    // Update the live feed status line
+    if (mortgage.status === 'fulfilled' && mortgage.value?.ok) {
+      const m = mortgage.value;
+      const direction = m.change.direction === 'up' ? '↑' : m.change.direction === 'down' ? '↓' : '→';
+      updateFeedStatus('fema', 'var(--commit)',
+        `FRED live — ${m.latest.formatted} mortgage ${direction} · Fed ${fedFunds.value?.latest?.formatted || '?'}`
+      );
+    }
+
+    return { mortgage: mortgage.value, fedFunds: fedFunds.value, cpi: cpi.value, caseshiller: caseshiller.value };
+  } catch (e) {
+    console.warn('fetchFRED:', e.message);
+    updateFeedStatus('fema', 'var(--escalate)', 'FRED — error, check key');
+    return null;
+  }
+}
+
+async function fetchCensusAPI() {
+  return null; // wiring later — FRED first
+  if (!ON_VERCEL) return null;
+  try {
+    const data = await callAPI('census', { geo: 'metro' });
+    if (!data.results) return null;
+
+    // Match Census MSA results to RE_NODES and apply entropy mods
+    let matched = 0;
+    data.results.forEach(r => {
+      const msaName = r.name.split(',')[0].toLowerCase();
+      const node = RE_NODES.find(n =>
+        n.n.toLowerCase().replace(' metro', '').includes(msaName) ||
+        msaName.includes(n.n.toLowerCase().replace(' metro', ''))
+      );
+      if (node) {
+        matched++;
+        node.liveData = `Census ACS: ${r.formatted.homeValue} median, ${r.formatted.income} income, ${r.formatted.affordability} affordability`;
+        if (r.nerva.entropy > 0.6 && node.ent < 0.7) {
+          LIVE_MODS[node.n] = {
+            ...(LIVE_MODS[node.n] || {}),
+            entDelta: r.nerva.entropy - node.ent,
+            liveReason: `Census: ${r.metrics.priceToIncome}x price/income — ${r.nerva.state}`,
+          };
+        }
+      }
+    });
+
+    updateFeedStatus('census', 'var(--commit)', `Census ACS — ${matched} metros matched`);
+    return data;
+  } catch (e) {
+    console.warn('Census API:', e.message);
+    return null;
+  }
+}
+
+async function fetchHUDAPI() {
+  return null; // wiring later — FRED first
+  if (!ON_VERCEL) return null;
+  try {
+    const data = await callAPI('hud', { type: 'list' });
+    updateFeedStatus('hud', 'var(--commit)', `HUD FMR — ${data.count || 0} metros`);
+    return data;
+  } catch (e) {
+    updateFeedStatus('hud', 'var(--t3)', 'HUD FMR — configure key');
+    return null;
+  }
+}
+
+function updateFeedStatus(feedId, color, text) {
+  // Update globe live feed bar indicators
+  const statusEl = document.getElementById('live-status-' + feedId);
+  if (statusEl) { statusEl.style.color = color; statusEl.textContent = text; }
+  // Update map live bar indicators
+  const dotEl = document.getElementById('mlb-' + feedId + '-dot');
+  const lblEl = document.getElementById('mlb-' + feedId);
+  if (dotEl) dotEl.style.background = color;
+  if (lblEl) lblEl.textContent = text;
+}
+
+function addLiveEvent(msg, color = 'var(--t2)') {
+  const feed = document.getElementById('live-events-list');
+  if (!feed) return;
+  const item = document.createElement('div');
+  item.className = 'lev-item';
+  item.innerHTML = `<span style="color:${color};font-size:8px">${msg}</span><span class="lev-time">${new Date().toLocaleTimeString()}</span>`;
+  feed.prepend(item);
+}
+
 async function fetchAllLiveData(){
   const bar=document.getElementById('live-bar');
   if(bar){bar.style.height='46px';}
   liveBarOpen=true;
 
-  // Clear old mods
   Object.keys(LIVE_MODS).forEach(k=>delete LIVE_MODS[k]);
 
-  // Run all feeds in parallel
   const lastEl=document.getElementById('live-lastupdate');
   if(lastEl)lastEl.textContent='Fetching…';
 
-  const [fema,usgs,noaa,meteo]=await Promise.allSettled([
-    fetchFEMA(),
-    fetchUSGS(),
-    fetchNOAA(),
-    fetchOpenMeteo()
+  // Run all feeds in parallel — existing direct feeds + new API layer
+  const results = await Promise.allSettled([
+    fetchFEMA(),        // Direct: FEMA NFIP claims
+    fetchUSGS(),        // Direct: earthquake feed
+    fetchNOAA(),        // Direct: weather alerts
+    fetchOpenMeteo(),   // Direct: temperature anomaly
+    fetchFRED(),        // API: FRED economic data
   ]);
 
   liveDataLoaded=true;
 
-  // Rebuild bars + lists with live mods applied
   buildBars();rebuildNodeList();updateMacro();
   if(showOpp)buildOppPanel();
   buildTop5();pushURLState();
@@ -2260,12 +2403,10 @@ async function fetchAllLiveData(){
   const now=new Date();
   if(lastEl)lastEl.textContent=`Updated ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-  // Show live event panel alongside node list
+  // Show live event panel
   const lfp=document.getElementById('live-feed-panel');
   const rp=document.querySelector('.rp');
   if(lfp&&rp){
-    // Stack them: node list hidden, live events shown
-    // Actually show both by shrinking node list
     rp.style.display='none';
     lfp.style.display='block';
   }
@@ -2946,35 +3087,58 @@ function closeMapDetail(){
 
 // ════ MAP LIVE DATA ════
 async function fetchMapLiveData(){
-  // Census ACS — median home values by county
+  // Census ACS via serverless function (Vercel) or direct fallback
   try{
     document.getElementById('mlb-census-dot').style.background='var(--hold)';
     document.getElementById('mlb-census').textContent='Census ACS — loading…';
-    // Use Census API — free, no key needed for basic queries
-    const censusUrl='https://api.census.gov/data/2022/acs/acs5?get=NAME,B25077_001E,B19013_001E&for=metropolitan+statistical+area/micropolitan+statistical+area:*';
-    const res=await fetch(censusUrl,{signal:AbortSignal.timeout(8000)});
-    if(!res.ok)throw new Error(res.status);
-    const data=await res.json();
-    // data[0] is headers: [NAME, B25077_001E (median home value), B19013_001E (median income), msa]
-    const rows=data.slice(1);
-    
-    // Match Census MSA data to our RE_NODES
-    RE_NODES.forEach(n=>{
-      const msaName=n.n.replace(' Metro','').toLowerCase();
-      const match=rows.find(r=>r[0]&&r[0].toLowerCase().includes(msaName));
-      if(match){
-        const censusMedian=parseInt(match[1]);
-        const censusIncome=parseInt(match[2]);
-        if(censusMedian>0){
-          n.liveData=`Census 2022 ACS: Median home value $${(censusMedian/1000).toFixed(0)}K, Median income $${(censusIncome/1000).toFixed(0)}K`;
-          // Adjust NERVA entropy based on affordability ratio
-          const ratio=censusMedian/censusIncome;
-          if(ratio>8&&n.ent<.7){LIVE_MODS[n.n]={...(LIVE_MODS[n.n]||{}),entDelta:.08,liveReason:`Census: Price/income ratio ${ratio.toFixed(1)}x — affordability stress`};}
+
+    let rows=[], matched=0;
+
+    if(ON_VERCEL){
+      // Use our serverless proxy which returns enriched NERVA data
+      const data=await callAPI('census',{geo:'metro'});
+      (data.results||[]).forEach(r=>{
+        const msaName=r.name.split(',')[0].toLowerCase();
+        const node=RE_NODES.find(n=>
+          n.n.toLowerCase().replace(' metro','').includes(msaName)||
+          msaName.includes(n.n.toLowerCase().replace(' metro',''))
+        );
+        if(node){
+          matched++;
+          node.liveData=`Census ACS: ${r.formatted.homeValue} median · ${r.formatted.income} income · Afford. ${r.formatted.affordability}`;
+          if(r.nerva.entropy>0.6&&node.ent<.7){
+            LIVE_MODS[node.n]={...(LIVE_MODS[node.n]||{}),
+              entDelta:r.nerva.entropy-node.ent,
+              liveReason:`Census: ${r.metrics.priceToIncome}x P/I ratio`};
+          }
         }
-      }
-    });
-    document.getElementById('mlb-census-dot').style.background='var(--commit)';
-    document.getElementById('mlb-census').textContent=`Census ACS — ${rows.length} MSAs loaded`;
+      });
+      document.getElementById('mlb-census-dot').style.background='var(--commit)';
+      document.getElementById('mlb-census').textContent=`Census ACS — ${matched} metros`;
+    } else {
+      // Direct Census API call (no key needed)
+      const censusUrl='https://api.census.gov/data/2022/acs/acs5?get=NAME,B25077_001E,B19013_001E&for=metropolitan+statistical+area/micropolitan+statistical+area:*';
+      const res=await fetch(censusUrl,{signal:AbortSignal.timeout(8000)});
+      if(!res.ok)throw new Error(res.status);
+      const data=await res.json();
+      rows=data.slice(1);
+      RE_NODES.forEach(n=>{
+        const msaName=n.n.replace(' Metro','').toLowerCase();
+        const match=rows.find(r=>r[0]&&r[0].toLowerCase().includes(msaName));
+        if(match){
+          const censusMedian=parseInt(match[1]);
+          const censusIncome=parseInt(match[2]);
+          if(censusMedian>0){
+            n.liveData=`Census ACS: $${(censusMedian/1000).toFixed(0)}K median · $${(censusIncome/1000).toFixed(0)}K income`;
+            const ratio=censusMedian/censusIncome;
+            if(ratio>8&&n.ent<.7){LIVE_MODS[n.n]={...(LIVE_MODS[n.n]||{}),entDelta:.08,liveReason:`Census: ${ratio.toFixed(1)}x P/I ratio`};}
+            matched++;
+          }
+        }
+      });
+      document.getElementById('mlb-census-dot').style.background='var(--commit)';
+      document.getElementById('mlb-census').textContent=`Census ACS — ${matched} metros`;
+    }
   }catch(e){
     document.getElementById('mlb-census-dot').style.background='var(--escalate)';
     document.getElementById('mlb-census').textContent='Census ACS — unavailable';
@@ -2984,22 +3148,34 @@ async function fetchMapLiveData(){
   try{
     document.getElementById('mlb-hud-dot').style.background='var(--hold)';
     document.getElementById('mlb-hud').textContent='HUD FMR — loading…';
-    // HUD publishes FMR data as JSON
-    const hudUrl='https://www.huduser.gov/hudapi/public/fmr/listMetroAreas';
-    const res=await fetch(hudUrl,{signal:AbortSignal.timeout(6000)});
-    if(res.ok){
+    const data=ON_VERCEL
+      ? await callAPI('hud',{type:'list'})
+      : await fetch('https://www.huduser.gov/hudapi/public/fmr/listMetroAreas',{signal:AbortSignal.timeout(6000)}).then(r=>r.ok?r.json():null);
+    if(data){
       document.getElementById('mlb-hud-dot').style.background='var(--commit)';
-      document.getElementById('mlb-hud').textContent='HUD FMR — loaded';
-    } else throw new Error(res.status);
+      document.getElementById('mlb-hud').textContent=`HUD FMR — ${data.count||data.metros?.length||'✓'}`;
+    } else throw new Error('no data');
   }catch(e){
     document.getElementById('mlb-hud-dot').style.background='var(--t3)';
-    document.getElementById('mlb-hud').textContent='HUD FMR — no key';
+    document.getElementById('mlb-hud').textContent=ON_VERCEL?'HUD FMR — add key':'HUD FMR — unavailable';
+  }
+
+  // FRED economic data (Vercel only — needs API key)
+  if(ON_VERCEL){
+    try{
+      const fredData=await callAPI('fred',{series:'mortgage30'});
+      if(fredData?.latest){
+        document.getElementById('mlb-status').textContent=
+          `FRED: ${fredData.latest.formatted} mortgage · Census loaded · ${new Date().toLocaleTimeString()}`;
+      }
+    }catch(e){/* FRED optional */}
   }
 
   mapLiveLoaded=true;
-  document.getElementById('mlb-status').textContent=`Map data updated ${new Date().toLocaleTimeString()}`;
-  
-  // Refresh markers with updated data
+  if(!ON_VERCEL){
+    document.getElementById('mlb-status').textContent=`Map data updated ${new Date().toLocaleTimeString()} · Deploy to Vercel for FRED + Zillow data`;
+  }
+
   if(mapboxMap)populateMapMarkers();
 }
 
