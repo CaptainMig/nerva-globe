@@ -1332,7 +1332,7 @@ function computeNode(n,hIdx){
 }
 
 // ════════════ THREE.JS ════════════
-let scene,cam,ren,globeGrp,barGrp,arcGrp,borderGrp;
+let scene,cam,ren,globeGrp,barGrp,arcGrp,borderGrp,orbitGrp;
 let autoRot=true,showArcs=false,showOpp=false,curH=1;
 let barMeshes=[],selIdx=null;
 let isDrag=false,px=0,py=0,rotX=.3,rotY=0,tX=.3,tY=0;
@@ -1474,6 +1474,8 @@ function initGL(){
 
   // Store cloud mesh for animation
   globeGrp.userData.cloudMesh=cloudMesh;
+  orbitGrp=new THREE.Group();scene.add(orbitGrp);
+  buildOrbitalObjects();
 
   drawCountryBorders();
   loadingStep(40,'Building signal nodes…');
@@ -2192,10 +2194,101 @@ function onCvHover(e){
 
 // ════ ANIMATE ════
 let fc=0;
+
+// ════════════════════════════════════════════════════════════
+// ORBITAL MECHANICS — objects floating above the globe
+// Added to scene directly so they orbit independently of globe rotation
+// ════════════════════════════════════════════════════════════
+
+const ORBITAL_OBJECTS = [
+  { id:'ISS',      label:'ISS',      altitude:5.54, inclination:51.6, speed:0.0045,  phase:0,              color:0x00ff9d, size:0.055, trail:40 },
+  { id:'Moon',     label:'Moon',     altitude:14.0, inclination:5.1,  speed:0.00012, phase:2.2,            color:0xb0bec5, size:0.18,  trail:0  },
+  { id:'Starlink', label:'Starlink', altitude:5.35, inclination:53.0, speed:0.0052,  phase:1.0,            color:0x60a5fa, size:0.045, trail:30 },
+  { id:'GPS',      label:'GPS',      altitude:7.75, inclination:55.0, speed:0.00085, phase:3.7,            color:0xfbbf24, size:0.06,  trail:15 },
+  { id:'Artemis',  label:'Artemis',  altitude:11.0, inclination:28.5, speed:0.00025, phase:1.6,            color:0xf97316, size:0.07,  trail:20 },
+];
+
+const orbitalMeshes=[];
+
+function buildOrbitalObjects(){
+  ORBITAL_OBJECTS.forEach(obj=>{
+    const geo=new THREE.SphereGeometry(obj.size,8,8);
+    const mat=new THREE.MeshBasicMaterial({color:obj.color});
+    const mesh=new THREE.Mesh(geo,mat);
+
+    // Glow halo
+    const hGeo=new THREE.SphereGeometry(obj.size*2.4,8,8);
+    const hMat=new THREE.MeshBasicMaterial({color:obj.color,transparent:true,opacity:0.10});
+    mesh.add(new THREE.Mesh(hGeo,hMat));
+
+    // Text label via canvas sprite
+    const cv=document.createElement('canvas');cv.width=160;cv.height=36;
+    const cx=cv.getContext('2d');
+    cx.font='bold 13px IBM Plex Mono,monospace';
+    cx.fillStyle='#'+obj.color.toString(16).padStart(6,'0');
+    cx.fillText(obj.label,4,24);
+    const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true}));
+    spr.scale.set(0.9,0.22,1);
+    spr.position.set(0,obj.size*4,0);
+    mesh.add(spr);
+
+    orbitGrp.add(mesh);
+
+    // Orbital trail
+    let trailLine=null,trailPts=[];
+    if(obj.trail>0){
+      for(let i=0;i<obj.trail;i++) trailPts.push(new THREE.Vector3());
+      const tGeo=new THREE.BufferGeometry().setFromPoints(trailPts);
+      trailLine=new THREE.Line(tGeo,new THREE.LineBasicMaterial({color:obj.color,transparent:true,opacity:0.25}));
+      orbitGrp.add(trailLine);
+    }
+    orbitalMeshes.push({mesh,trailLine,trailPts,angle:obj.phase,obj});
+  });
+}
+
+function updateOrbitalObjects(){
+  if(!orbitGrp)return;
+  const spaceOn=activeLayers&&activeLayers.has('space');
+  const t=Date.now()*0.001;
+  const gy=globeGrp?globeGrp.rotation.y:0;
+
+  orbitalMeshes.forEach((o,i)=>{
+    o.angle+=o.obj.speed;
+    const a=o.angle;
+    const inc=(o.obj.inclination*Math.PI)/180;
+    const alt=o.obj.altitude;
+
+    // Inclined circular orbit in world space
+    const x=alt*Math.cos(a);
+    const y=alt*Math.sin(a)*Math.sin(inc);
+    const z=alt*Math.sin(a)*Math.cos(inc);
+
+    // Counter-rotate by globe rotation so orbit is inertially fixed
+    const rx=x*Math.cos(-gy)-z*Math.sin(-gy);
+    const rz=x*Math.sin(-gy)+z*Math.cos(-gy);
+
+    o.mesh.position.set(rx,y,rz);
+    o.mesh.visible=spaceOn;
+
+    // Pulse halo opacity
+    if(o.mesh.children[0])o.mesh.children[0].material.opacity=0.08+0.05*Math.sin(t*1.5+i);
+
+    // Update trail
+    if(o.trailLine){
+      o.trailPts.shift();
+      o.trailPts.push(new THREE.Vector3(rx,y,rz));
+      o.trailLine.geometry.setFromPoints(o.trailPts);
+      o.trailLine.geometry.attributes.position.needsUpdate=true;
+      o.trailLine.visible=spaceOn;
+    }
+  });
+}
+
 function animate(){
   requestAnimationFrame(animate);fc++;
   tickFly(); // camera fly-to animation
   if(autoRot)tY+=.0006;
+  updateOrbitalObjects();
   rotX+=(tX-rotX)*.08;rotY+=(tY-rotY)*.08;
   globeGrp.rotation.x=rotX;globeGrp.rotation.y=rotY;
   // Cloud layer drifts slightly ahead of globe
