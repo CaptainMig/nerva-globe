@@ -199,7 +199,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;heigh
 .zi-div{font-size:8px;color:var(--t3);opacity:.35}
 
 /* ══ BAR LEGEND ══ */
-#bar-legend{position:fixed;bottom:68px;right:218px;z-index:200;background:rgba(1,5,14,0.92);border:1px solid var(--border);border-radius:4px;padding:8px 12px;min-width:160px;transition:all .2s}
+#bar-legend{position:fixed;bottom:68px;left:182px;z-index:200;background:rgba(1,5,14,0.95);border:1px solid var(--border);border-radius:4px;padding:8px 12px;min-width:160px;transition:all .2s}
 #bar-legend:hover{border-color:var(--border2)}
 #legend-body{transition:all .2s;overflow:hidden}
 .bl-title{font-size:6px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:6px}
@@ -433,7 +433,7 @@ body.top5-open #globe-panel{top:132px}
   #map-detail{width:100%!important;top:auto!important;bottom:60px!important;height:50dvh!important;border-top:1px solid var(--border2)}
 
   /* ── Node legend: bottom left, smaller ── */
-  #node-legend{bottom:68px!important;left:8px!important;right:auto!important;max-width:160px;font-size:7px}
+  #node-legend{bottom:68px!important;left:8px!important;right:auto!important;max-width:160px;font-size:7px;display:none}
   .node-leg-row{font-size:7px}
 
   /* ── ZIP search bar ── */
@@ -1343,11 +1343,12 @@ let activeLayers=new Set(['geopolitics']);
 // Returns the working node array based on zoom
 function workingNodes(){
   // RE_NODES always visible (metro-scale, global zoom appropriate)
+  // SPACE_NODES always visible (orbital/global scale)
   // US_LOCAL_NODES only visible when zoomed in to county/zip level
   if(currentZoomLevel==='county'||currentZoomLevel==='zip'){
     return ALL_NODES; // everything
   }
-  return [...NODES,...RE_NODES]; // global + RE metros always
+  return [...NODES,...RE_NODES,...SPACE_NODES]; // global + RE metros always
 }
 // Recompute zoom level from camera distance
 function updateZoomLevel(){
@@ -3734,7 +3735,9 @@ function toggleLegend(){
 }
 // Restore legend state on load
 window.addEventListener('DOMContentLoaded',()=>{
-  if(localStorage.getItem('legendCollapsed')==='1'){
+  // Default to collapsed — user clicks to expand
+  const savedState=localStorage.getItem('legendCollapsed');
+  if(savedState !== '0'){ // collapsed unless explicitly expanded
     const body=document.getElementById('legend-body');
     const tog=document.getElementById('legend-toggle');
     if(body)body.style.display='none';
