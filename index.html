@@ -7,7 +7,7 @@
 <title>NERVA Globe — Signal Intelligence Surface</title>
 <meta name="description" content="A quantum-inspired decision engine that reads where the world is coherent, where it is unstable, and where acting on the signal would be a mistake.">
 <meta property="og:title" content="NERVA Globe — Signal Intelligence Surface">
-<meta property="og:description" content="170+ nodes. 32 layers. Live data. Quantum entropy math. Built by Starpoint Enterprises.">
+<meta property="og:description" content="170+ nodes. 32 layers. Live data. Quantum entropy math. Built by Starpoint LLC.">
 <meta name="theme-color" content="#010407">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23010407' stroke='%2300ff9d' stroke-width='3'/><circle cx='50' cy='50' r='48' fill='none' stroke='%2300ff9d' stroke-width='1' opacity='0.3'/><circle cx='50' cy='50' r='7' fill='%2300ff9d'/><line x1='50' y1='4' x2='50' y2='28' stroke='%2300ff9d' stroke-width='2.5' stroke-linecap='round'/><line x1='50' y1='72' x2='50' y2='96' stroke='%23ff1744' stroke-width='2.5' stroke-linecap='round'/><line x1='4' y1='50' x2='22' y2='50' stroke='%2300ff9d' stroke-width='1.5' stroke-linecap='round' opacity='0.5'/><line x1='78' y1='50' x2='96' y2='50' stroke='%2300ff9d' stroke-width='1.5' stroke-linecap='round' opacity='0.5'/></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23010407'/><circle cx='50' cy='50' r='42' fill='none' stroke='%2300ff9d' stroke-width='3'/><circle cx='50' cy='50' r='7' fill='%2300ff9d'/><line x1='50' y1='8' x2='50' y2='30' stroke='%2300ff9d' stroke-width='2.5' stroke-linecap='round'/><line x1='50' y1='70' x2='50' y2='92' stroke='%23ff1744' stroke-width='2.5' stroke-linecap='round'/></svg>">
@@ -169,6 +169,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;heigh
 .opp-ph{padding:10px 12px;border-bottom:1px solid rgba(224,64,251,.2);position:sticky;top:0;background:rgba(1,4,9,.99);z-index:2}
 .opp-ph-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:var(--opp)}
 .opp-ph-sub{font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(224,64,251,.6);margin-top:2px}
+.exp-badge{display:inline-block;margin-left:8px;padding:2px 6px;font-family:'JetBrains Mono','IBM Plex Mono',monospace;font-size:11px;line-height:1;letter-spacing:1.5px;text-transform:uppercase;color:#C8841C;border:1px solid #C8841C;border-radius:3px;background:rgba(200,132,28,.06);vertical-align:middle}
+.opp-ph-disclosure{font-size:10px;line-height:1.5;color:rgba(200,132,28,.88);margin-top:8px;padding-top:8px;border-top:1px solid rgba(200,132,28,.2)}
 .opp-item{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.025);cursor:pointer;transition:background .15s}
 .opp-item:hover{background:rgba(224,64,251,.04)}
 .opp-item-rank{font-family:'Bebas Neue',sans-serif;font-size:22px;color:rgba(224,64,251,.3);float:left;margin-right:8px;line-height:1}
@@ -533,18 +535,18 @@ body.top5-open #globe-panel{top:132px}
       <div class="intro-card">
         <div class="intro-card-icon">◈</div>
         <div class="intro-card-title">Opportunity Surface</div>
-        <div class="intro-card-text">Inverted NERVA logic finds asymmetric entries — nodes in chaos now trending toward coherence. The contrarian alpha layer.</div>
+        <div class="intro-card-text">Inverted NERVA logic flags asymmetric entries — nodes in chaos now trending toward coherence. The contrarian hypothesis layer. Experimental: validation in progress.</div>
       </div>
     </div>
     <div class="intro-states">
       <div class="intro-state" style="background:rgba(0,255,157,.12);color:var(--commit);border:1px solid rgba(0,255,157,.3)">COMMIT — Act</div>
       <div class="intro-state" style="background:rgba(255,193,7,.08);color:var(--hold);border:1px solid rgba(255,193,7,.3)">HOLD — Wait</div>
       <div class="intro-state" style="background:rgba(41,182,246,.08);color:var(--wait);border:1px solid rgba(41,182,246,.3)">WAIT — Watch</div>
-      <div class="intro-state" style="background:rgba(255,109,0,.1);color:var(--escalate);border:1px solid rgba(255,109,0,.3)">ESCALATE — Caution</div>
+      <div class="intro-state" style="background:rgba(255,109,0,.1);color:var(--escalate);border:1px solid rgba(255,109,0,.3)">CONSULT — Get a Second Read</div>
       <div class="intro-state" style="background:rgba(255,23,68,.1);color:var(--toxic);border:1px solid rgba(255,23,68,.3)">TOXIC — Stand Aside</div>
     </div>
     <button class="intro-enter" id="intro-enter">ENTER THE SIGNAL FIELD</button>
-    <div class="intro-version">Built on NERVA v9 · Starpoint Enterprises LLC · AMDG</div>
+    <div class="intro-version">Built on NERVA v9 · Starpoint LLC</div>
   </div>
 </div>
 
@@ -567,7 +569,7 @@ body.top5-open #globe-panel{top:132px}
       <tr><td style="color:var(--commit);font-weight:700">COMMIT</td><td>Trajectory locked, high coherence, low entropy. Signal is clean.</td><td>Tall, green</td><td>Align with this actor. Low surprise expected.</td></tr>
       <tr><td style="color:var(--hold);font-weight:700">HOLD</td><td>Deliberate pause. Coherent but waiting for a trigger.</td><td>Medium, amber</td><td>Position to move fast. Watch for the catalyst.</td></tr>
       <tr><td style="color:var(--wait);font-weight:700">WAIT</td><td>Superposition. Deliberately preserving optionality.</td><td>Medium, blue</td><td>Hedge. Don't force a read.</td></tr>
-      <tr><td style="color:var(--escalate);font-weight:700">ESCALATE</td><td>Decision pressure mounting. Coherence degrading.</td><td>Short-medium, orange</td><td>Begin exit planning if exposed. Prepare contingency.</td></tr>
+      <tr><td style="color:var(--escalate);font-weight:700">CONSULT</td><td>Decision pressure mounting. Coherence degrading faster than a single reader can resolve.</td><td>Short-medium, orange</td><td>Bring in a second read before acting. Prepare contingency if exposed; do not act on this signal unilaterally.</td></tr>
       <tr><td style="color:var(--toxic);font-weight:700">TOXIC</td><td>Decision integrity destroyed. Maximum entropy. Pure noise.</td><td>Short, red</td><td>Distance yourself. Wait for regime reset.</td></tr>
     </table>
 
@@ -599,7 +601,7 @@ body.top5-open #globe-panel{top:132px}
     <table class="guide-table">
       <tr><th>Button</th><th>What It Does</th></tr>
       <tr><td style="color:var(--t1)">↻ Rotate</td><td>Toggle auto-rotation of the globe</td></tr>
-      <tr><td style="color:var(--t1)">⌁ Arcs</td><td>Show geodesic tension arcs — lines connecting TOXIC/ESCALATE nodes to their nearest COMMIT anchor. Arc height = coherence decay along the path.</td></tr>
+      <tr><td style="color:var(--t1)">⌁ Arcs</td><td>Show geodesic tension arcs — lines connecting TOXIC/CONSULT nodes to their nearest COMMIT anchor. Arc height = coherence decay along the path.</td></tr>
       <tr><td style="color:var(--opp)">◈ Opportunity</td><td>Open the Opportunity Surface panel — ranked list of asymmetric entry signals. Nodes in chaos now with a trajectory toward commitment.</td></tr>
       <tr><td style="color:var(--t1)">All Layers</td><td>Toggle all 32 layers on/off at once</td></tr>
       <tr><td style="color:var(--commit)">⬤ Live Data</td><td>Fetch real-time data from FEMA (flood claims), USGS (earthquakes), NOAA (weather alerts), and Open-Meteo (temperature anomalies). No API key required. Modulates node entropy based on live conditions.</td></tr>
@@ -628,16 +630,17 @@ body.top5-open #globe-panel{top:132px}
     <div class="guide-h2">What Changes vs What Stays Fixed</div>
     <div class="guide-p"><strong style="color:var(--t1)">Changes with horizon:</strong> Event-driven entropy, political volatility, financial noise, tactical military situations. These are high-frequency oscillations that decay out over time.</div>
     <div class="guide-p"><strong style="color:var(--t1)">Stays fixed regardless of horizon:</strong> Geography (chokepoints, arable land), demographics (India's dividend is locked regardless of government), physics (Arctic ice melt trajectory, Cascadia subduction return period). These nodes read the same at 24h and 10yr because the underlying attractor is the same — what changes is only the entropy wrapping around them.</div>
-    <div class="guide-tip"><strong>The most important 10-year signal:</strong> Find nodes that are ESCALATE or TOXIC at 24h but COMMIT at 10yr, AND where the gap is driven by physics/demographics rather than politics. These are the ones where the 10yr trajectory is nearly certain even though the path is volatile. That's where NERVA's opportunity layer pays off most — you can see the destination clearly even when the road is chaotic.</div>
+    <div class="guide-tip"><strong>The most important 10-year signal:</strong> Find nodes that are CONSULT or TOXIC at 24h but COMMIT at 10yr, AND where the gap is driven by physics/demographics rather than politics. These are the ones where the 10yr trajectory is nearly certain even though the path is volatile. That's where the opportunity layer's hypotheses concentrate — you can see the destination clearly even when the road is chaotic.</div>
     <div class="guide-tip"><strong>The ρ₀₁ term</strong> (coherence coupling) is the off-diagonal element of the density matrix. It measures how strongly a node is coupled to its adjacent decision field. High ρ₀₁ = the node is influential and connected. The geodesic arcs between nodes are weighted by ρ₀₁ decay — the arc collapses toward the globe surface as coherence is lost across distance.</div>
 
     <hr class="guide-divider">
     <div class="guide-h1">The Opportunity Layer</div>
-    <div class="guide-p">The ◈ Opportunity Surface inverts NERVA's normal logic. Instead of flagging clean signals, it identifies nodes that are TOXIC or ESCALATE at the current horizon but trend toward COMMIT or HOLD at the 2-year horizon. This is the asymmetric entry calculation — maximum fear priced in now, trajectory improving later.</div>
+    <div class="guide-p">The ◈ Opportunity Surface inverts NERVA's normal logic. Instead of flagging clean signals, it identifies nodes that are TOXIC or CONSULT at the current horizon but trend toward COMMIT or HOLD at the 2-year horizon. This is the asymmetric entry calculation — maximum fear priced in now, trajectory improving later.</div>
     <div class="guide-p">Opportunity Score (0–100) is computed from the entropy gap between current and 2-year states, amplified if the node has explicit contrarian logic attached. Each opportunity node in the detail panel shows the specific investment or decision thesis.</div>
+    <div class="guide-p"><strong style="color:var(--t1)">Status: experimental.</strong> Opportunity scoring is a hypothesis-ranking layer, not a validated predictor. The falsification protocol is pre-committed: lift = hit rate when NERVA verdicts are followed minus hit rate when overridden, measured across a minimum of 50 scored outcomes and 15 overrides. Scores will carry this label until that threshold is met and results are published — in either direction.</div>
 
     <div class="guide-h1">Built By</div>
-    <div class="guide-p" style="color:var(--t3)">NERVA Globe is a product of Starpoint Enterprises LLC, developed by Anthony ("Captain Mig"). The decision engine has been in development since 2020, evolving from early Bloch sphere sketches to the v9 system you're using now. The math is real. The signals are real. AMDG.</div>
+    <div class="guide-p" style="color:var(--t3)">NERVA Globe is a product of Starpoint LLC, developed by Anthony ("Captain Mig"). The decision engine has been in development across multiple versions, evolving from early Bloch sphere sketches to the v9 system you're using now. The math is real. The data feeds are live. The validation protocol is published — and pending.</div>
   </div>
 </div>
 
@@ -648,7 +651,7 @@ body.top5-open #globe-panel{top:132px}
     <div class="m-cell"><div class="m-lbl">Global ψ</div><div class="m-val" id="m-ent" style="color:var(--commit)">0.00</div></div>
     <div class="m-cell"><div class="m-lbl">Signal</div><div class="m-val" id="m-sig" style="color:var(--t1)">0%</div></div>
     <div class="m-cell"><div class="m-lbl">Toxic</div><div class="m-val" id="m-tox" style="color:var(--toxic)">0</div></div>
-    <div class="m-cell"><div class="m-lbl">Escalate</div><div class="m-val" id="m-esc" style="color:var(--escalate)">0</div></div>
+    <div class="m-cell"><div class="m-lbl">Consult</div><div class="m-val" id="m-esc" style="color:var(--escalate)">0</div></div>
     <div class="m-cell"><div class="m-lbl">Commit</div><div class="m-val" id="m-com" style="color:var(--commit)">0</div></div>
     <div class="m-cell"><div class="m-lbl">Near-Flip</div><div class="m-val" id="m-nf" style="color:var(--hold)">0</div></div>
     <div class="m-cell"><div class="m-lbl">Layers</div><div class="m-val" id="m-lay" style="color:var(--wait)">0</div></div>
@@ -718,8 +721,9 @@ body.top5-open #globe-panel{top:132px}
 <!-- OPPORTUNITY PANEL -->
 <div class="opp-panel" id="opp-panel">
   <div class="opp-ph">
-    <div class="opp-ph-title">◈ Opportunity Surface</div>
+    <div class="opp-ph-title">◈ Opportunity Surface <span class="exp-badge">Experimental</span></div>
     <div class="opp-ph-sub">Inverted NERVA — Asymmetric Entry</div>
+    <div class="opp-ph-disclosure">Opportunity scores are generated by inverting NERVA's entropy logic. They have not yet been validated against a baseline. Validation requires 50+ scored outcomes and 15+ overrides under the published falsification protocol. Until then, treat these as ranked hypotheses, not signals.</div>
   </div>
   <div id="opp-list"></div>
 </div>
@@ -933,7 +937,7 @@ body.top5-open #globe-panel{top:132px}
       <div class="bl-state"><div class="bl-state-dot" style="background:var(--commit)"></div><span style="color:var(--commit)">COMMIT</span></div>
       <div class="bl-state"><div class="bl-state-dot" style="background:var(--hold)"></div><span style="color:var(--hold)">HOLD</span></div>
       <div class="bl-state"><div class="bl-state-dot" style="background:var(--wait)"></div><span style="color:var(--wait)">WAIT</span></div>
-      <div class="bl-state"><div class="bl-state-dot" style="background:var(--escalate)"></div><span style="color:var(--escalate)">ESCALATE</span></div>
+      <div class="bl-state"><div class="bl-state-dot" style="background:var(--escalate)"></div><span style="color:var(--escalate)">CONSULT</span></div>
       <div class="bl-state"><div class="bl-state-dot" style="background:var(--toxic)"></div><span style="color:var(--toxic)">TOXIC</span></div>
     </div>
   </div>
@@ -952,8 +956,8 @@ body.top5-open #globe-panel{top:132px}
 // Deep insurance sector | Country matrix architecture
 // ════════════════════════════════════════════════════════════════════
 
-const STATES=['COMMIT','HOLD','WAIT','ESCALATE','TOXIC'];
-const SC={COMMIT:{r:0,g:1,b:.615},HOLD:{r:1,g:.757,b:.027},WAIT:{r:.16,g:.714,b:.965},ESCALATE:{r:1,g:.427,b:0},TOXIC:{r:1,g:.09,b:.267}};
+const STATES=['COMMIT','HOLD','WAIT','CONSULT','TOXIC'];
+const SC={COMMIT:{r:0,g:1,b:.615},HOLD:{r:1,g:.757,b:.027},WAIT:{r:.16,g:.714,b:.965},CONSULT:{r:1,g:.427,b:0},TOXIC:{r:1,g:.09,b:.267}};
 const HZS=[
   {label:'24 Hours — Flash Crisis',h:24,v:.9,d:.95},
   {label:'72 Hours — Tactical Window',h:72,v:.7,d:.85},
@@ -1021,7 +1025,7 @@ const THESES={
 
 // ════════════ NODES DATABASE ════════════
 // Each node: n=name, lat, lng, layer, th=theta, ph=phi, ent=entropy, coh=coherence, ev=EV, ts=timeStates[6], d=desc, why=[3 bullets]
-// OPPORTUNITY: oppLogic = inverted read when TOXIC/ESCALATE with long-horizon COMMIT
+// OPPORTUNITY: oppLogic = inverted read when TOXIC/CONSULT with long-horizon COMMIT
 const NODES=[
 // ── GEOPOLITICS ──
 {n:'Iran',lat:32.4,lng:53.7,layer:'geopolitics',th:2.8,ph:4.2,ent:.91,coh:.12,ev:false,ts:[4,4,3,3,2,1],d:'Active kinetic conflict with US. Maximum entropy.',why:['US strikes on nuclear facilities Feb 28 triggered full escalation','All diplomatic channels severed — no back-channel active','Regime survival now the only operative decision variable'],oppLogic:'Iran at 24h is pure noise. At 2yr, regime change or exhaustion opens reconstruction investment at generational lows. Watch for ceasefire signal as contrarian entry.'},
@@ -1183,7 +1187,7 @@ const US_LOCAL_NODES=[
 // ════════════════════════════════════════════════════════════════
 // REAL ESTATE NODES — 50 DMAs + Neighborhood level
 // reData: {medPrice, priceYoY, dom, inventory, affordIdx, insuranceRisk}
-// NERVA state = Buy(COMMIT)/Watch(HOLD)/Wait(WAIT)/Caution(ESCALATE)/Avoid(TOXIC)
+// NERVA state = Buy(COMMIT)/Watch(HOLD)/Wait(WAIT)/Caution(CONSULT)/Avoid(TOXIC)
 // ════════════════════════════════════════════════════════════════
 const RE_NODES=[
 // ── NORTHEAST METROS ──
@@ -1195,7 +1199,7 @@ const RE_NODES=[
 {n:'Philadelphia Metro',lat:39.95,lng:-75.17,layer:'re_metro',th:.9,ph:4.9,ent:.35,coh:.68,ev:true,ts:[0,0,0,0,0,0],d:'Most undervalued major East Coast metro. $300K median. Philly comeback.',why:['Median home $295K vs $780K NYC — same Amtrak corridor, 90min to Midtown','Center City population +8% since 2020 — remote worker migration accelerating','Temple/Drexel/Penn research corridor: $4B NIH funding anchor creating stable demand'],reData:{medPrice:'$295K',priceYoY:'+7.2%',dom:12,inventory:'1.2mo',affordIdx:62,insuranceRisk:'LOW-MOD',rentYield:'6.8%',signal:'COMMIT — Highest risk-adjusted yield in Northeast'},oppLogic:'Philadelphia is 3-5 years from the Boston/Brooklyn moment. $295K median with Amtrak access to NYC/DC. Fishtown/Northern Liberties already turned; Kensington corridor next.',isLocal:true,localLevel:2},
 {n:'Washington DC Metro',lat:38.91,lng:-77.04,layer:'re_metro',th:1.3,ph:5.1,ent:.46,coh:.57,ev:true,ts:[1,1,1,0,0,0],d:'Federal employment anchor. DOGE uncertainty. Virginia suburbs diverging.',why:['Federal workforce uncertainty creating temporary buyer hesitation — entry window','Northern Virginia: Amazon HQ2 demand fully absorbed, new phase 2 still executing','DC proper: office-to-residential pipeline: 5,000 units in conversion — new supply incoming'],reData:{medPrice:'$575K',priceYoY:'+2.1%',dom:24,inventory:'2.4mo',affordIdx:45,insuranceRisk:'LOW',rentYield:'3.9%',signal:'HOLD — Federal employment risk priced in partially'},isLocal:true,localLevel:2},
 // ── SOUTHEAST METROS ──
-{n:'Miami Metro',lat:25.77,lng:-80.19,layer:'re_metro',th:2.4,ph:5.2,ent:.78,coh:.22,ev:false,ts:[3,3,3,3,2,2],d:'Insurance crisis ground zero. Peak pricing. Correction risk building.',why:['Citizens Insurance monopoly: 60% of policies — state-backed systemic risk','Median condo $620K in 2026 vs $380K in 2019 — 63% appreciation priced in','Climate-adjusted cap rates: if insurance cost properly priced, yields go negative for coastal assets'],reData:{medPrice:'$625K',priceYoY:'+1.2%',dom:52,inventory:'5.1mo',affordIdx:22,insuranceRisk:'CRITICAL',rentYield:'3.1%',signal:'ESCALATE — Insurance crisis not priced in yet'},oppLogic:'Miami correction incoming when insurance reality hits asset prices. Short timeline: 2-3 years. Opportunity: buy the dip on inland Dade (Coral Gables, Kendall) post-correction at 20-30% below peak.',isLocal:true,localLevel:2},
+{n:'Miami Metro',lat:25.77,lng:-80.19,layer:'re_metro',th:2.4,ph:5.2,ent:.78,coh:.22,ev:false,ts:[3,3,3,3,2,2],d:'Insurance crisis ground zero. Peak pricing. Correction risk building.',why:['Citizens Insurance monopoly: 60% of policies — state-backed systemic risk','Median condo $620K in 2026 vs $380K in 2019 — 63% appreciation priced in','Climate-adjusted cap rates: if insurance cost properly priced, yields go negative for coastal assets'],reData:{medPrice:'$625K',priceYoY:'+1.2%',dom:52,inventory:'5.1mo',affordIdx:22,insuranceRisk:'CRITICAL',rentYield:'3.1%',signal:'CONSULT — Insurance crisis not priced in yet'},oppLogic:'Miami correction incoming when insurance reality hits asset prices. Short timeline: 2-3 years. Opportunity: buy the dip on inland Dade (Coral Gables, Kendall) post-correction at 20-30% below peak.',isLocal:true,localLevel:2},
 {n:'Brickell / Edgewater',lat:25.76,lng:-80.19,layer:'re_hood',th:2.5,ph:5.2,ent:.82,coh:.18,ev:false,ts:[4,4,3,3,2,2],d:'Luxury condo tower oversupply. Foreign buyer dependency.',why:['15,000 luxury units under construction — 4yr supply at current absorption rate','Latin American buyer dependency: 40% of transactions — currency/political risk','Sea level rise: Brickell elevation 1.2m — structural vulnerability in 10yr horizon'],reData:{medPrice:'$1.1M',priceYoY:'-0.8%',dom:75,inventory:'7.2mo',affordIdx:14,insuranceRisk:'CRITICAL',rentYield:'2.4%',signal:'TOXIC — Oversupply + climate risk'},isLocal:true,localLevel:3},
 {n:'Wynwood / Design District',lat:25.80,lng:-80.20,layer:'re_hood',th:1.6,ph:5.2,ent:.56,coh:.42,ev:true,ts:[2,2,1,1,1,0],d:'Art/tech gentrification. Inland position. Better insurance profile.',why:['Inland location 2.5m elevation — dramatically better flood insurance profile vs beach','Tech migration: 200+ startups relocated 2020-2025 — office demand creating mixed-use value','Wynwood BID investment: $150M in public realm improvements locking in trajectory'],reData:{medPrice:'$685K',priceYoY:'+4.8%',dom:32,inventory:'2.8mo',affordIdx:28,insuranceRisk:'MODERATE',rentYield:'4.6%',signal:'HOLD — Buy inland Miami, avoid coastal'},isLocal:true,localLevel:3},
 {n:'Austin Metro',lat:30.27,lng:-97.74,layer:'re_metro',th:1.4,ph:5.0,ent:.52,coh:.50,ev:true,ts:[2,2,1,1,0,0],d:'Post-boom correction. Tech anchor stable. Oversupply clearing.',why:['2022 peak: $560K median. 2024 trough: $440K. 2026: $475K — correction absorbed','Tesla/SpaceX/Apple: 50,000 tech jobs as demand floor — no fundamentals collapse','New supply: 18,000 units delivered 2023-2025 — absorption near-complete, supply normalizing'],reData:{medPrice:'$478K',priceYoY:'+2.4%',dom:38,inventory:'3.4mo',affordIdx:48,insuranceRisk:'LOW',rentYield:'4.4%',signal:'HOLD — Buy at $440-460K range'},oppLogic:'Austin correction was orderly. Tech demand floor is real. Zilker/Travis Heights and Domain area multifamily: entry 15% below 2022 peak with same employment base.',isLocal:true,localLevel:2},
@@ -1207,15 +1211,15 @@ const RE_NODES=[
 {n:'Minneapolis Metro',lat:44.98,lng:-93.27,layer:'re_metro',th:.8,ph:5.0,ent:.30,coh:.72,ev:true,ts:[0,0,0,0,0,0],d:'Medical/tech economy. 4-season undervalued. Mayo Clinic anchor.',why:['UnitedHealth + Medtronic + Target HQ: $200B+ market cap employers in metro','Minneapolis median $350K — 55% below comparable coastal markets','2040 zoning: upzoning entire city to allow density — structural supply response in progress'],reData:{medPrice:'$352K',priceYoY:'+4.1%',dom:16,inventory:'1.5mo',affordIdx:64,insuranceRisk:'LOW',rentYield:'5.9%',signal:'COMMIT — Undervalued quality market'},isLocal:true,localLevel:2},
 {n:'Detroit Metro',lat:42.33,lng:-83.05,layer:'re_metro',th:1.0,ph:5.0,ent:.38,coh:.64,ev:true,ts:[0,0,0,0,0,0],d:'EV manufacturing comeback. Blight resolution. Historic low base.',why:['Ford/GM/Stellantis EV investment: $25B committed — manufacturing jobs returning','Detroit median: $185K — lowest of any major US city — asymmetric upside','Midtown/Corktown: $300-400K for renovated historic stock — Chicago-equivalent quality at 40% discount'],reData:{medPrice:'$188K',priceYoY:'+8.4%',dom:18,inventory:'1.4mo',affordIdx:82,insuranceRisk:'LOW',rentYield:'8.2%',signal:'COMMIT — Highest yield potential, highest execution risk'},oppLogic:'Detroit is the highest-yield, highest-execution-risk play in the US. $185K median with EV manufacturing comeback. Midtown and Corktown have turned; Eastern Market and Indian Village next.',isLocal:true,localLevel:2},
 // ── WEST COAST METROS ──
-{n:'LA Metro',lat:34.05,lng:-118.24,layer:'re_metro',th:2.3,ph:5.3,ent:.76,coh:.24,ev:false,ts:[3,3,3,3,2,2],d:'Palisades fire aftermath. Insurance crisis. Price discovery distorted.',why:['State Farm FAIR Plan: $458B statewide exposure — actuarially insolvent pre-next-event','Palisades fire: $50B insured loss restructured FAIR Plan — premium increases 40-80% incoming','Price discovery broken: sellers anchoring to 2022 peaks, buyers pricing in insurance reality'],reData:{medPrice:'$875K',priceYoY:'-1.4%',dom:55,inventory:'4.8mo',affordIdx:18,insuranceRisk:'CRITICAL',rentYield:'2.8%',signal:'ESCALATE — Insurance cost not yet in prices'},oppLogic:'LA correction is in progress but not complete. Fire-safe inland neighborhoods (Pasadena, Burbank, Glendale, San Fernando Valley) will absorb demand from coastal flight. Entry post-correction: 2026-2027 window.',isLocal:true,localLevel:2},
+{n:'LA Metro',lat:34.05,lng:-118.24,layer:'re_metro',th:2.3,ph:5.3,ent:.76,coh:.24,ev:false,ts:[3,3,3,3,2,2],d:'Palisades fire aftermath. Insurance crisis. Price discovery distorted.',why:['State Farm FAIR Plan: $458B statewide exposure — actuarially insolvent pre-next-event','Palisades fire: $50B insured loss restructured FAIR Plan — premium increases 40-80% incoming','Price discovery broken: sellers anchoring to 2022 peaks, buyers pricing in insurance reality'],reData:{medPrice:'$875K',priceYoY:'-1.4%',dom:55,inventory:'4.8mo',affordIdx:18,insuranceRisk:'CRITICAL',rentYield:'2.8%',signal:'CONSULT — Insurance cost not yet in prices'},oppLogic:'LA correction is in progress but not complete. Fire-safe inland neighborhoods (Pasadena, Burbank, Glendale, San Fernando Valley) will absorb demand from coastal flight. Entry post-correction: 2026-2027 window.',isLocal:true,localLevel:2},
 {n:'Silver Lake / Los Feliz',lat:34.09,lng:-118.27,layer:'re_hood',th:1.8,ph:5.3,ent:.63,coh:.36,ev:true,ts:[2,2,1,1,1,0],d:'Best risk-adjusted LA neighborhood. Fire-safe. Walkable. Stable.',why:['Elevation 150-300m — zero wildfire interface zone — favorable insurance','East Side arts/tech culture: Spotify, Netflix, tech adjacency creating demand','Rental market: 3-4% yield on $900K-1.2M properties — institutional quality'],reData:{medPrice:'$1.05M',priceYoY:'+1.8%',dom:35,inventory:'3.1mo',affordIdx:22,insuranceRisk:'LOW',rentYield:'3.6%',signal:'HOLD — Best LA entry, wait for macro clarity'},isLocal:true,localLevel:3},
 {n:'San Francisco Metro',lat:37.77,lng:-122.42,layer:'re_metro',th:2.0,ph:5.2,ent:.68,coh:.30,ev:false,ts:[3,3,2,2,1,0],d:'Deepest correction of any major US city. AI recovery beginning.',why:['SF median down 22% from 2022 peak — deepest correction of any top-10 US market','Office vacancy 34% — downtown hollowed out but tech employment stabilizing','AI boom: Anthropic, OpenAI, Google DeepMind density creating new demand in Mission/SoMa'],reData:{medPrice:'$1.12M',priceYoY:'-2.1%',dom:48,inventory:'5.2mo',affordIdx:16,insuranceRisk:'MOD (quake)',rentYield:'3.2%',signal:'HOLD — AI recovery narrative real but priced optimistically'},oppLogic:'SF is a 3-5yr recovery story driven by AI density. Noe Valley, Glen Park, and Bernal Heights are most insulated from downtown doom loop. Entry at current levels on AI thesis is reasonable.',isLocal:true,localLevel:2},
 {n:'Seattle Metro',lat:47.61,lng:-122.33,layer:'re_metro',th:1.5,ph:5.1,ent:.54,coh:.46,ev:true,ts:[1,1,1,1,1,0],d:'Amazon/Microsoft anchor. Seismic risk unpriced. Correction absorbing.',why:['Amazon + Microsoft + Boeing: 300,000 tech/aerospace jobs — strongest employment base of any US tech city','Cascadia subduction zone: M9+ probability within 50yr window — earthquake insurance at 14%','Post-2022 correction: $850K median from $1.05M peak — 19% correction, stabilizing'],reData:{medPrice:'$852K',priceYoY:'+1.6%',dom:32,inventory:'2.9mo',affordIdx:26,insuranceRisk:'MOD (quake)',rentYield:'3.4%',signal:'HOLD — Seismic risk underpriced, otherwise solid'},isLocal:true,localLevel:2},
 {n:'Denver Metro',lat:39.74,lng:-104.98,layer:'re_metro',th:1.6,ph:5.0,ent:.58,coh:.40,ev:true,ts:[2,2,1,1,1,0],d:'Post-pandemic correction. Water risk. Healthcare/tech base.',why:['Median down 14% from 2022 peak — correction deeper than Austin, more buying opportunity','Colorado River allocation: long-term water math challenging for 500,000/yr growth rate','UCHealth + DaVita + Lockheed Martin: diversified employment base preventing crash'],reData:{medPrice:'$548K',priceYoY:'+1.2%',dom:42,inventory:'3.8mo',affordIdx:42,insuranceRisk:'LOW',rentYield:'4.1%',signal:'HOLD — Water risk is the unknown'},isLocal:true,localLevel:2},
 // ── SUN BELT EMERGING ──
-{n:'Phoenix Metro',lat:33.45,lng:-112.07,layer:'re_metro',th:2.2,ph:5.2,ent:.74,coh:.24,ev:false,ts:[3,3,3,3,3,4],d:'Water existential risk. TSMC anchor. Price bubble building again.',why:['Lake Mead at 38% — Tier 2 shortage active — Phoenix is building on borrowed water','TSMC Arizona: 10,000 jobs but water-intensive chip fab in water-scarce city — contradiction','Investor share: 28% of Phoenix transactions are institutional/investor — demand distorted'],reData:{medPrice:'$420K',priceYoY:'+5.8%',dom:35,inventory:'3.1mo',affordIdx:46,insuranceRisk:'LOW (fire edge)',rentYield:'4.8%',signal:'ESCALATE — Water risk not priced in'},oppLogic:'Phoenix water crisis will force the largest urban water transition in US history. Short-term: prices holding on TSMC narrative. 5-10yr: water scarcity forces demand destruction. Trade: long water tech companies, short Phoenix RE at peak.',isLocal:true,localLevel:2},
+{n:'Phoenix Metro',lat:33.45,lng:-112.07,layer:'re_metro',th:2.2,ph:5.2,ent:.74,coh:.24,ev:false,ts:[3,3,3,3,3,4],d:'Water existential risk. TSMC anchor. Price bubble building again.',why:['Lake Mead at 38% — Tier 2 shortage active — Phoenix is building on borrowed water','TSMC Arizona: 10,000 jobs but water-intensive chip fab in water-scarce city — contradiction','Investor share: 28% of Phoenix transactions are institutional/investor — demand distorted'],reData:{medPrice:'$420K',priceYoY:'+5.8%',dom:35,inventory:'3.1mo',affordIdx:46,insuranceRisk:'LOW (fire edge)',rentYield:'4.8%',signal:'CONSULT — Water risk not priced in'},oppLogic:'Phoenix water crisis will force the largest urban water transition in US history. Short-term: prices holding on TSMC narrative. 5-10yr: water scarcity forces demand destruction. Trade: long water tech companies, short Phoenix RE at peak.',isLocal:true,localLevel:2},
 {n:'Las Vegas Metro',lat:36.17,lng:-115.14,layer:'re_metro',th:1.8,ph:5.2,ent:.64,coh:.34,ev:false,ts:[2,2,2,2,2,3],d:'90% Colorado River dependent. Tourism resilient. Water cliff approaching.',why:['Vegas uses 90% Colorado River water — restructuring will force conservation','Casino/tourism: $72B annual GDP — more resilient to recession than pure residential markets','Population growth: 45,000/yr into water-constrained system — math doesn\'t work at 10yr'],reData:{medPrice:'$388K',priceYoY:'+3.2%',dom:38,inventory:'3.4mo',affordIdx:50,insuranceRisk:'LOW',rentYield:'5.1%',signal:'WAIT — Tourism resilient, water is existential'},isLocal:true,localLevel:2},
-{n:'Tampa Metro',lat:27.95,lng:-82.46,layer:'re_metro',th:2.1,ph:5.2,ent:.70,coh:.28,ev:false,ts:[3,3,3,3,2,2],d:'Helene 2024 devastation. Insurance retreat. Recovery uncertain.',why:['Helene 2024: direct hit on Pinellas Peninsula — $30B+ damage, recovery ongoing','Citizens Insurance: dominant in Hillsborough/Pinellas — state guarantee fund stressed','Pre-Helene migration demand intact but insurance reality slowing buyer pool'],reData:{medPrice:'$368K',priceYoY:'-3.2%',dom:62,inventory:'5.8mo',affordIdx:48,insuranceRisk:'CRITICAL',rentYield:'4.2%',signal:'ESCALATE — Helene aftermath + insurance not resolved'},isLocal:true,localLevel:2},
+{n:'Tampa Metro',lat:27.95,lng:-82.46,layer:'re_metro',th:2.1,ph:5.2,ent:.70,coh:.28,ev:false,ts:[3,3,3,3,2,2],d:'Helene 2024 devastation. Insurance retreat. Recovery uncertain.',why:['Helene 2024: direct hit on Pinellas Peninsula — $30B+ damage, recovery ongoing','Citizens Insurance: dominant in Hillsborough/Pinellas — state guarantee fund stressed','Pre-Helene migration demand intact but insurance reality slowing buyer pool'],reData:{medPrice:'$368K',priceYoY:'-3.2%',dom:62,inventory:'5.8mo',affordIdx:48,insuranceRisk:'CRITICAL',rentYield:'4.2%',signal:'CONSULT — Helene aftermath + insurance not resolved'},isLocal:true,localLevel:2},
 {n:'Jacksonville Metro',lat:30.33,lng:-81.66,layer:'re_metro',th:.9,ph:5.1,ent:.34,coh:.68,ev:true,ts:[0,0,0,0,0,0],d:'Most affordable major Florida metro. Financial services. Inland position.',why:['Jacksonville median $310K — cheapest major Florida market — migration magnet from Miami/Tampa','Fidelity/Deutsche Bank/UnitedHealth: 60,000 financial services jobs — Jacksonville is Florida\'s back-office','Inland position: 25mi from coast — meaningfully better insurance profile than Tampa/Miami'],reData:{medPrice:'$312K',priceYoY:'+6.2%',dom:25,inventory:'2.2mo',affordIdx:60,insuranceRisk:'LOW-MOD',rentYield:'6.4%',signal:'COMMIT — Best risk-adjusted Florida entry'},oppLogic:'Jacksonville is where Tampa was in 2017. Financial services employment + inland position + $310K median. Riverside/Avondale and San Marco neighborhoods are the value pocket.',isLocal:true,localLevel:2},
 // ── TEXAS METROS ──
 {n:'Dallas-Fort Worth',lat:32.78,lng:-96.80,layer:'re_metro',th:1.0,ph:5.0,ent:.38,coh:.66,ev:true,ts:[0,0,0,1,1,1],d:'Largest US population growth. Corporate HQ magnet. No income tax.',why:['Toyota, Goldman Sachs, Oracle, Tesla (HQ): 200,000+ corporate relocations 2020-2026','DFW: fastest growing major US metro — 150,000/yr net migration — structural demand','Texas grid vulnerability: ERCOT winter events creating insurance/repair cost uncertainty'],reData:{medPrice:'$395K',priceYoY:'+3.8%',dom:30,inventory:'2.8mo',affordIdx:56,insuranceRisk:'LOW-MOD',rentYield:'5.4%',signal:'HOLD — Macro strong, inventory building'},isLocal:true,localLevel:2},
@@ -1319,9 +1323,9 @@ function computeNode(n,hIdx){
   const phi=n.ph+(hIdx*.3);
   const ev=n.ev&&entropy<.72&&coh>.25;
   const signal=(1-entropy)*100;
-  // Opportunity score: TOXIC/ESCALATE now, but COMMIT/HOLD at longer horizons
+  // Opportunity score: TOXIC/CONSULT now, but COMMIT/HOLD at longer horizons
   let oppScore=0;
-  if(sIdx>=3){// currently ESCALATE or TOXIC
+  if(sIdx>=3){// currently CONSULT or TOXIC
     const futureIdx=Math.min(n.ts[4],4); // 2yr future state
     if(futureIdx<=1)oppScore=100-(entropy*100); // strong flip toward COMMIT/HOLD
     else if(futureIdx<=2)oppScore=60-(entropy*50);
@@ -1885,7 +1889,7 @@ function toggleAll(){
 // ════ NODE LIST ════
 function rebuildNodeList(){
   const list=document.getElementById('np-list');list.innerHTML='';
-  const so={TOXIC:0,ESCALATE:1,WAIT:2,HOLD:3,COMMIT:4};
+  const so={TOXIC:0,CONSULT:1,WAIT:2,HOLD:3,COMMIT:4};
   const nodes=workingNodes();
   const vis=nodes.map((n,i)=>({...n,...computeNode(n,curH),idx:i}))
     .filter(n=>{
@@ -1919,7 +1923,7 @@ function updateMacro(){
     const c=computeNode(n,curH);
     te+=c.ent;
     if(c.state==='TOXIC')tox++;
-    if(c.state==='ESCALATE')esc++;
+    if(c.state==='CONSULT')esc++;
     if(c.state==='COMMIT')com++;
     if((c.state==='WAIT'||c.state==='HOLD')&&(c.ent>.55||c.ent<.35))nf++;
   });
@@ -1955,30 +1959,30 @@ function buildOppPanel(){
 
 // ════ DETAIL PANEL — SEMANTICS ════
 const SEM={
-  geopolitics:{COMMIT:'Strategic trajectory locked. Actor executing with high coherence. Model around this with confidence.',HOLD:'Deliberate strategic pause. Coherent but awaiting trigger. Will move.',WAIT:'Preserving optionality deliberately. Superposition is the strategy.',ESCALATE:'Decision pressure mounting. Coherence degrading. Window for resolution closing.',TOXIC:'Decision integrity destroyed. No positive EV path. Signal is noise.'},
-  climate:{COMMIT:'Physics has committed. Trajectory locked by feedback loops. Decision is how to respond, not whether.',HOLD:'System in metastable state. Concerning but reversible within this horizon.',WAIT:'Genuinely uncertain trajectory. Competing forcing functions.',ESCALATE:'Approaching tipping point. Accelerating change outpacing response.',TOXIC:'Past point of no return. Feedback self-reinforcing. Damage mitigation only.'},
-  finance:{COMMIT:'Capital flows directional and self-reinforcing. Position with confidence.',HOLD:'Consolidating. Smart money positioned but not adding. Waiting for catalyst.',WAIT:'Genuine two-way risk. Comparable downside either direction.',ESCALATE:'Volatility expanding. Leverage tested. De-risk now.',TOXIC:'Market structure broken. Capital preservation only.'},
-  ins_flood:{COMMIT:'Insurance market functioning. Flood risk quantified and priced. Capital flowing.',HOLD:'Market stressed but functional. Reinsurance tightening. Pricing adjustment ongoing.',WAIT:'Model uncertainty elevated. Climate tail risks challenging actuarial assumptions.',ESCALATE:'Market withdrawals accelerating. Coverage gaps widening. Public backstop under pressure.',TOXIC:'Insurance market has failed. Risk cannot be transferred. Assets uninsurable.'},
-  ins_fire:{COMMIT:'Wildfire risk priced and insurable. Market stable.',HOLD:'Premium increases ongoing but market intact. Some retreat from highest-risk zones.',WAIT:'Model reset underway. Historical loss data no longer predictive.',ESCALATE:'Major carrier exits accelerating. Regulatory rate suppression creating adverse selection.',TOXIC:'Private market effectively exited. State FAIR Plans as insurer of last resort — systemic risk.'},
-  ins_quake:{COMMIT:'Seismic risk quantified. Insurance market functioning. Government backstop adequate.',HOLD:'Exposure accumulating. Market functional but capital stretched.',WAIT:'Model uncertainty: fault behavior not fully understood. Pricing approximate.',ESCALATE:'Exposure concentration creating systemic risk. Single event could exhaust capacity.',TOXIC:'Tail event would exceed entire global reinsurance capital. No private solution exists.'},
-  ins_storm:{COMMIT:'Storm risk priced. Insurance functioning. Cat bonds absorbing volatility.',HOLD:'Pricing stressed. Reinsurance repricing. Market functional but fragile.',WAIT:'Intensification trend: historical data understating future risk. Actuarial reset in progress.',ESCALATE:'Carrier exits creating uninsured gap. Public backstops taking on systemic risk.',TOXIC:'Insurance market failed. Mandatory coverage unavailable. Asset values fictitious.'},
-  ins_political:{COMMIT:'Political risk quantifiable. PRI market functioning. Bilateral programs available.',HOLD:'Risk elevated but manageable. Pricing up. Capacity tightening.',WAIT:'Political landscape shifting. Standard risk models challenged by unprecedented events.',ESCALATE:'Expropriation risk elevated. Bilateral programs stressed. Waiting lists.',TOXIC:'Market effectively exited. Expropriation occurring. No private coverage available.'},
-  ins_cyber:{COMMIT:'Cyber risk quantifiable. Market functioning. Hardened requirements working.',HOLD:'Claims elevated but manageable. Market hardening creating better risk selection.',WAIT:'Systemic risk not modeled. Correlated event potential unquantified.',ESCALATE:'Ransomware frequency exceeding capacity. Silent cyber creating unexpected aggregate.',TOXIC:'Systemic cyber event exceeds industry capital. War exclusions invoked. Coverage void.'},
-  ins_health:{COMMIT:'Health risk insurable. Market functioning. Pandemic risk now explicitly addressed.',HOLD:'Post-COVID restructuring. New product development. Market adapting.',WAIT:'Pandemic exclusions universal. New framework needed but not yet designed.',ESCALATE:'LTC market collapse ongoing. Pandemic protection gap structural.',TOXIC:'Long-term care market effectively failed. Pandemic risk completely uninsurable privately.'},
-  ins_ag:{COMMIT:'Crop insurance market functioning. Government backstop adequate. Loss ratios manageable.',HOLD:'Climate variability stressing actuarial models. Repricing underway.',WAIT:'Drought patterns becoming unmodelable. Historical frequency data obsolete.',ESCALATE:'Loss ratios exceeding 100% in key regions. Market retreat accelerating.',TOXIC:'Agricultural insurance market failed in drought zones. Smallholder farmers completely unprotected.'},
+  geopolitics:{COMMIT:'Strategic trajectory locked. Actor executing with high coherence. Model around this with confidence.',HOLD:'Deliberate strategic pause. Coherent but awaiting trigger. Will move.',WAIT:'Preserving optionality deliberately. Superposition is the strategy.',CONSULT:'Decision pressure mounting. Coherence degrading. Window for resolution closing.',TOXIC:'Decision integrity destroyed. No positive EV path. Signal is noise.'},
+  climate:{COMMIT:'Physics has committed. Trajectory locked by feedback loops. Decision is how to respond, not whether.',HOLD:'System in metastable state. Concerning but reversible within this horizon.',WAIT:'Genuinely uncertain trajectory. Competing forcing functions.',CONSULT:'Approaching tipping point. Accelerating change outpacing response.',TOXIC:'Past point of no return. Feedback self-reinforcing. Damage mitigation only.'},
+  finance:{COMMIT:'Capital flows directional and self-reinforcing. Position with confidence.',HOLD:'Consolidating. Smart money positioned but not adding. Waiting for catalyst.',WAIT:'Genuine two-way risk. Comparable downside either direction.',CONSULT:'Volatility expanding. Leverage tested. De-risk now.',TOXIC:'Market structure broken. Capital preservation only.'},
+  ins_flood:{COMMIT:'Insurance market functioning. Flood risk quantified and priced. Capital flowing.',HOLD:'Market stressed but functional. Reinsurance tightening. Pricing adjustment ongoing.',WAIT:'Model uncertainty elevated. Climate tail risks challenging actuarial assumptions.',CONSULT:'Market withdrawals accelerating. Coverage gaps widening. Public backstop under pressure.',TOXIC:'Insurance market has failed. Risk cannot be transferred. Assets uninsurable.'},
+  ins_fire:{COMMIT:'Wildfire risk priced and insurable. Market stable.',HOLD:'Premium increases ongoing but market intact. Some retreat from highest-risk zones.',WAIT:'Model reset underway. Historical loss data no longer predictive.',CONSULT:'Major carrier exits accelerating. Regulatory rate suppression creating adverse selection.',TOXIC:'Private market effectively exited. State FAIR Plans as insurer of last resort — systemic risk.'},
+  ins_quake:{COMMIT:'Seismic risk quantified. Insurance market functioning. Government backstop adequate.',HOLD:'Exposure accumulating. Market functional but capital stretched.',WAIT:'Model uncertainty: fault behavior not fully understood. Pricing approximate.',CONSULT:'Exposure concentration creating systemic risk. Single event could exhaust capacity.',TOXIC:'Tail event would exceed entire global reinsurance capital. No private solution exists.'},
+  ins_storm:{COMMIT:'Storm risk priced. Insurance functioning. Cat bonds absorbing volatility.',HOLD:'Pricing stressed. Reinsurance repricing. Market functional but fragile.',WAIT:'Intensification trend: historical data understating future risk. Actuarial reset in progress.',CONSULT:'Carrier exits creating uninsured gap. Public backstops taking on systemic risk.',TOXIC:'Insurance market failed. Mandatory coverage unavailable. Asset values fictitious.'},
+  ins_political:{COMMIT:'Political risk quantifiable. PRI market functioning. Bilateral programs available.',HOLD:'Risk elevated but manageable. Pricing up. Capacity tightening.',WAIT:'Political landscape shifting. Standard risk models challenged by unprecedented events.',CONSULT:'Expropriation risk elevated. Bilateral programs stressed. Waiting lists.',TOXIC:'Market effectively exited. Expropriation occurring. No private coverage available.'},
+  ins_cyber:{COMMIT:'Cyber risk quantifiable. Market functioning. Hardened requirements working.',HOLD:'Claims elevated but manageable. Market hardening creating better risk selection.',WAIT:'Systemic risk not modeled. Correlated event potential unquantified.',CONSULT:'Ransomware frequency exceeding capacity. Silent cyber creating unexpected aggregate.',TOXIC:'Systemic cyber event exceeds industry capital. War exclusions invoked. Coverage void.'},
+  ins_health:{COMMIT:'Health risk insurable. Market functioning. Pandemic risk now explicitly addressed.',HOLD:'Post-COVID restructuring. New product development. Market adapting.',WAIT:'Pandemic exclusions universal. New framework needed but not yet designed.',CONSULT:'LTC market collapse ongoing. Pandemic protection gap structural.',TOXIC:'Long-term care market effectively failed. Pandemic risk completely uninsurable privately.'},
+  ins_ag:{COMMIT:'Crop insurance market functioning. Government backstop adequate. Loss ratios manageable.',HOLD:'Climate variability stressing actuarial models. Repricing underway.',WAIT:'Drought patterns becoming unmodelable. Historical frequency data obsolete.',CONSULT:'Loss ratios exceeding 100% in key regions. Market retreat accelerating.',TOXIC:'Agricultural insurance market failed in drought zones. Smallholder farmers completely unprotected.'},
 };
 const PROJ={
   COMMIT:'Clean, directional signal. Align your trajectory here — positive EV amplification available. Low entropy means low surprise. Act with confidence within this horizon.',
   HOLD:'Signal coherent but not yet actionable. Monitor for the catalyst. Do not force a decision — the actor hasn\'t. Position to move fast when state flips.',
   WAIT:'Signal split — two plausible futures. Do not commit either interpretation. Hedge. Watch for coherence emergence.',
-  ESCALATE:'Warning signal intensifying. Phase transition approaching. If you have exposure, begin exit planning. Prepare contingency for both outcomes.',
+  CONSULT:'Warning signal intensifying. Phase transition approaching. If you have exposure, begin exit planning. Prepare contingency for both outcomes.',
   TOXIC:'Emitting noise, not signal. Any decision you make based on this node inherits its entropy. Distance yourself. Wait for regime reset.'
 };
 const FLIPM={
   COMMIT:[{t:'Exogenous shock breaks self-reinforcing loop',tg:'→ HOLD',tc:'var(--hold)'},{t:'Leadership transition disrupts coherent trajectory',tg:'→ WAIT',tc:'var(--wait)'}],
-  HOLD:[{t:'Catalyst arrives — decision window opens',tg:'→ COMMIT',tc:'var(--commit)'},{t:'External pressure forces premature decision',tg:'→ ESCALATE',tc:'var(--escalate)'}],
-  WAIT:[{t:'Information asymmetry resolved — one path dominates',tg:'→ HOLD',tc:'var(--hold)'},{t:'External shock forces binary choice before clarity',tg:'→ ESCALATE',tc:'var(--escalate)'}],
-  ESCALATE:[{t:'Pressure releases — actor gains time and optionality',tg:'→ HOLD',tc:'var(--hold)'},{t:'Decision integrity collapses — no positive path remains',tg:'→ TOXIC',tc:'var(--toxic)'}],
+  HOLD:[{t:'Catalyst arrives — decision window opens',tg:'→ COMMIT',tc:'var(--commit)'},{t:'External pressure forces premature decision',tg:'→ CONSULT',tc:'var(--escalate)'}],
+  WAIT:[{t:'Information asymmetry resolved — one path dominates',tg:'→ HOLD',tc:'var(--hold)'},{t:'External shock forces binary choice before clarity',tg:'→ CONSULT',tc:'var(--escalate)'}],
+  CONSULT:[{t:'Pressure releases — actor gains time and optionality',tg:'→ HOLD',tc:'var(--hold)'},{t:'Decision integrity collapses — no positive path remains',tg:'→ TOXIC',tc:'var(--toxic)'}],
   TOXIC:[{t:'Regime change or external intervention resets surface',tg:'→ WAIT',tc:'var(--wait)'},{t:'Exhaustion creates temporary ceasefire — coherence window',tg:'→ HOLD',tc:'var(--hold)'}]
 };
 
@@ -3114,7 +3118,7 @@ function buildTop5(){
       if(c.state==='COMMIT')score+=30;
       else if(c.state==='HOLD')score+=15;
       else if(c.state==='TOXIC')score-=20; // toxic is only interesting via opp layer
-      else if(c.state==='ESCALATE')score+=5; // escalate is watch-worthy
+      else if(c.state==='CONSULT')score+=5; // escalate is watch-worthy
       if(c.oppScore>30)score+=c.oppScore*.3; // opp layer boost
       if(c.ev)score+=8;
       return{n,c,score};
@@ -3132,7 +3136,7 @@ function buildTop5(){
     let why='';
     if(c.state==='COMMIT')why=`Clean signal. Align with confidence.`;
     else if(c.state==='HOLD')why=`Coherent. Waiting for catalyst.`;
-    else if(c.state==='ESCALATE')why=`Pressure mounting. Monitor closely.`;
+    else if(c.state==='CONSULT')why=`Pressure mounting. Monitor closely.`;
     else if(c.oppScore>30)why=`◈ ${c.state} now → ${STATES[Math.min(n.ts[4],4)]} at 2yr`;
     else why=n.d?.split('.')[0]||'';
 
@@ -3179,7 +3183,7 @@ function updateArcsWithMeta(){
   const nodes=workingNodes();
   const active=nodes.map((n,i)=>({...n,i})).filter(n=>activeLayers.has(n.layer));
   const commits=active.filter(n=>computeNode(n,curH).state==='COMMIT');
-  const tense=active.filter(n=>{const s=computeNode(n,curH).state;return s==='TOXIC'||s==='ESCALATE'});
+  const tense=active.filter(n=>{const s=computeNode(n,curH).state;return s==='TOXIC'||s==='CONSULT'});
 
   tense.forEach(tn=>{
     const tPos=ll2v(tn.lat,tn.lng,R*1.012);
@@ -3533,7 +3537,7 @@ function initMapboxFallback(){
 function insRiskColor(r){
   if(!r)return'var(--hold)';
   if(r==='CRITICAL')return'var(--toxic)';
-  if(r.includes('HIGH')||r.includes('MOD')||r.includes('ESCALATE'))return'var(--escalate)';
+  if(r.includes('HIGH')||r.includes('MOD')||r.includes('CONSULT'))return'var(--escalate)';
   return'var(--commit)';
 }
 
@@ -3782,35 +3786,35 @@ Object.assign(SEM,{
     COMMIT:'Market fundamentals locked and self-reinforcing. Population inflow, employment growth, and supply constraint align. Entry now preserves asymmetric upside.',
     HOLD:'Fundamentals strong but timing matters. Correction absorbing or overvaluation present. Position for entry on next pullback.',
     WAIT:'Genuine two-way risk. Market at inflection — could accelerate or correct. Insufficient clarity for commitment.',
-    ESCALATE:'Imbalances building: overvaluation, supply surge, or macro headwinds. Risk of correction exceeding 15%. De-risk existing exposure.',
+    CONSULT:'Imbalances building: overvaluation, supply surge, or macro headwinds. Risk of correction exceeding 15%. De-risk existing exposure.',
     TOXIC:'Market signal destroyed by insurance crisis, oversupply, or existential risk (water, climate). No positive EV path at this horizon.',
   },
   re_hood:{
     COMMIT:'Neighborhood trajectory locked. Gentrification cycle, infrastructure investment, and employment anchors align. Buy and hold.',
     HOLD:'Strong neighborhood but entry timing critical. Priced ahead of fundamentals or near-term catalyst pending.',
     WAIT:'Mixed signals — some blocks turning, others stagnant. Requires granular due diligence.',
-    ESCALATE:'Neighborhood facing pressure: insurance retreat, crime, school district issues, or competitive new supply.',
+    CONSULT:'Neighborhood facing pressure: insurance retreat, crime, school district issues, or competitive new supply.',
     TOXIC:'Structural decline. Insurance unavailable, crime elevated, or climate risk makes asset permanently impaired.',
   },
   re_multifamily:{
     COMMIT:'Cap rates, rent growth, and vacancy all aligned. Debt coverage ratio positive. Acquire.',
     HOLD:'Fundamentals okay but cap rate compression limits upside. Wait for better basis.',
     WAIT:'Rent growth slowing, new supply incoming. Underwriting conservative.',
-    ESCALATE:'Cap rate decompression risk. Expense inflation outpacing rent growth. Review existing portfolio.',
+    CONSULT:'Cap rate decompression risk. Expense inflation outpacing rent growth. Review existing portfolio.',
     TOXIC:'Market rate rents below operating cost. Insurance/taxes/maintenance creating negative cash flow. Exit.',
   },
   re_luxury:{
     COMMIT:'Luxury buyer demand exceeds supply. Foreign capital or equity-rich domestic buyer pool driving absorption.',
     HOLD:'Luxury supply building. Buyer pool thin. Selective.',
     WAIT:'Foreign buyer uncertainty. Currency headwinds or geopolitical risk dampening demand.',
-    ESCALATE:'Luxury supply glut. Developers cutting prices. Long marketing times indicate demand gap.',
+    CONSULT:'Luxury supply glut. Developers cutting prices. Long marketing times indicate demand gap.',
     TOXIC:'Luxury market failed. Oversupply permanent. No buyer pool at current pricing.',
   },
   re_commercial:{
     COMMIT:'Office/retail demand stable. Occupancy above 85%. Conversion economics negative (keep as commercial).',
     HOLD:'Vacancy elevated but stabilizing. Market repricing. Select assets viable.',
     WAIT:'Work-from-home secular shift still unresolved. Oversupply in office uncertain.',
-    ESCALATE:'Vacancy cascade. Loan maturities creating forced sellers. Distressed buying possible.',
+    CONSULT:'Vacancy cascade. Loan maturities creating forced sellers. Distressed buying possible.',
     TOXIC:'Office market functionally broken. Vacancy above 30%. Conversion or demolition only economics that work.',
   },
 });
@@ -4064,7 +4068,7 @@ async function searchZIP() {
       const pti = medInc > 0 ? medVal / medInc : 0;
       const aff = pti > 0 ? Math.max(0, Math.min(100, (3/pti)*100)) : 50;
       const ent = Math.min(0.92, Math.max(0.10, (pti-1)/12));
-      const state = aff > 72 ? 'COMMIT' : aff > 55 ? 'HOLD' : aff > 38 ? 'WAIT' : aff > 22 ? 'ESCALATE' : 'TOXIC';
+      const state = aff > 72 ? 'COMMIT' : aff > 55 ? 'HOLD' : aff > 38 ? 'WAIT' : aff > 22 ? 'CONSULT' : 'TOXIC';
       result = {
         name: row.NAME || `ZIP ${zip}`,
         geoId: zip,
@@ -4135,7 +4139,7 @@ function renderZIPResult(r) {
     // For homebuyers: re-weight signal toward affordability
     // If EV gate fails but affordability is strong, that's fine — they're not renting it
     const liveScore = (r.metrics.affordabilityIndex * 0.6) + ((1 - r.nerva.entropy) * 100 * 0.4);
-    displayState = liveScore > 72 ? 'COMMIT' : liveScore > 55 ? 'HOLD' : liveScore > 38 ? 'WAIT' : 'ESCALATE';
+    displayState = liveScore > 72 ? 'COMMIT' : liveScore > 55 ? 'HOLD' : liveScore > 38 ? 'WAIT' : 'CONSULT';
     const liveCol = SC[displayState] || SC.HOLD;
     displayHex = '#' + [liveCol.r,liveCol.g,liveCol.b].map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('');
 
@@ -4485,7 +4489,7 @@ function getMobileHTML() {
   <div class="m-macro-item"><div class="m-macro-lbl">Global ψ</div><div class="m-macro-val" id="m-ent" style="color:#00ff9d">—</div></div>
   <div class="m-macro-item"><div class="m-macro-lbl">Signal</div><div class="m-macro-val" id="m-sig" style="color:#e8edf5">—</div></div>
   <div class="m-macro-item"><div class="m-macro-lbl">Toxic</div><div class="m-macro-val" id="m-tox" style="color:#ff1744">—</div></div>
-  <div class="m-macro-item"><div class="m-macro-lbl">Escalate</div><div class="m-macro-val" id="m-esc" style="color:#f97316">—</div></div>
+  <div class="m-macro-item"><div class="m-macro-lbl">Consult</div><div class="m-macro-val" id="m-esc" style="color:#f97316">—</div></div>
   <div class="m-macro-item"><div class="m-macro-lbl">Commit</div><div class="m-macro-val" id="m-com" style="color:#00ff9d">—</div></div>
   <div class="m-macro-item"><div class="m-macro-lbl">Mortgage</div><div class="m-macro-val" id="m-mort" style="color:#fbbf24;font-size:16px">—</div></div>
   <div class="m-macro-item"><div class="m-macro-lbl">WTI Oil</div><div class="m-macro-val" id="m-wti" style="color:#fbbf24;font-size:16px">—</div></div>
@@ -4548,7 +4552,7 @@ function getMobileHTML() {
     <a href="/nerva-docs.html" class="m-footer-link">API DOCS ↗</a>
     <a href="https://github.com/CaptainMig/nerva-globe" target="_blank" class="m-footer-link">GITHUB ↗</a>
   </div>
-  <div style="font-family:'IBM Plex Mono',monospace;font-size:7px;color:#2a4060;margin-top:10px;letter-spacing:2px">STARPOINT ENTERPRISES LLC · AMDG</div>
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:7px;color:#2a4060;margin-top:10px;letter-spacing:2px">STARPOINT LLC</div>
 </div>
 <div class="m-backdrop" id="m-backdrop" onclick="closeDrawer()"></div>
 <div class="m-drawer" id="m-drawer">
@@ -4558,7 +4562,7 @@ function getMobileHTML() {
 </div>`;
 }
 
-const MC = { COMMIT:'#00ff9d', HOLD:'#fbbf24', WAIT:'#60a5fa', ESCALATE:'#f97316', TOXIC:'#ff1744' };
+const MC = { COMMIT:'#00ff9d', HOLD:'#fbbf24', WAIT:'#60a5fa', CONSULT:'#f97316', TOXIC:'#ff1744' };
 const HZ_LABELS = ['24 Hours — Flash Crisis','72 Hours — Tactical Window','30 Days — Operational','6 Months — Strategic Arc','2 Years — Investment Cycle','10 Years — Civilizational'];
 const HZ_DECAY  = [1.0,0.92,0.80,0.65,0.50,0.35];
 let mHorizon=0, mSearchMode='residential', mIntentMode='live', mLastZIPResult=null, mLiveData={};
@@ -4646,15 +4650,15 @@ function renderMobileNodes(){
   const computed=ALL_NODES.map(n=>{
     const mod=LIVE_MODS[n.n]||{};
     const ent=Math.min(0.92,Math.min(0.95,(n.entropy||0.5)+(mod.entDelta||0))*decay);
-    const state=ent<0.25?'COMMIT':ent<0.42?'HOLD':ent<0.60?'WAIT':ent<0.78?'ESCALATE':'TOXIC';
+    const state=ent<0.25?'COMMIT':ent<0.42?'HOLD':ent<0.60?'WAIT':ent<0.78?'CONSULT':'TOXIC';
     return {...n,ent,state,liveReason:mod.liveReason};
   }).sort((a,b)=>{
-    const o={TOXIC:0,ESCALATE:1,WAIT:2,HOLD:3,COMMIT:4};
+    const o={TOXIC:0,CONSULT:1,WAIT:2,HOLD:3,COMMIT:4};
     return (o[a.state]||5)-(o[b.state]||5)||b.ent-a.ent;
   });
 
   const tox=computed.filter(n=>n.state==='TOXIC').length;
-  const esc=computed.filter(n=>n.state==='ESCALATE').length;
+  const esc=computed.filter(n=>n.state==='CONSULT').length;
   const com=computed.filter(n=>n.state==='COMMIT').length;
   const avgEnt=computed.reduce((s,n)=>s+n.ent,0)/Math.max(computed.length,1);
   document.getElementById('m-ent').textContent=avgEnt.toFixed(3);
@@ -4704,7 +4708,7 @@ function openDrawer(node){
       ${node.state==='COMMIT'?'Act with confidence — signal coherent'
         :node.state==='HOLD'?'Monitor — position for entry'
         :node.state==='WAIT'?'Two-way risk — observe only'
-        :node.state==='ESCALATE'?'Reduce exposure — coherence degrading'
+        :node.state==='CONSULT'?'Reduce exposure — coherence degrading'
         :'Stand aside — noise dominates'}
     </div>
     ${whyHtml?`<div class="m-why">${whyHtml}</div>`:''}
@@ -4745,7 +4749,7 @@ async function mobileSearchZIP(){
 function renderMobileZIPResult(r){
   const isLive=mIntentMode==='live';
   const liveScore=r.metrics.affordabilityIndex*0.6+(1-r.nerva.entropy)*100*0.4;
-  const liveState=liveScore>72?'COMMIT':liveScore>55?'HOLD':liveScore>38?'WAIT':'ESCALATE';
+  const liveState=liveScore>72?'COMMIT':liveScore>55?'HOLD':liveScore>38?'WAIT':'CONSULT';
   const displayState=isLive?liveState:r.nerva.state;
   const col=MC[displayState]||'#fff';
   const affColor=r.metrics.affordabilityIndex>60?'#00ff9d':r.metrics.affordabilityIndex>35?'#fbbf24':'#ff1744';

@@ -5,7 +5,7 @@
 
 > *A quantum-inspired decision engine that reads where the world is coherent, where it is unstable, and where acting on the signal would be a mistake.*
 
-Built by **[Starpoint Enterprises LLC](https://starpointenterprises.com)** · AMDG
+Built by **[Starpoint LLC](https://starpointenterprises.com)**
 
 ---
 
@@ -22,7 +22,7 @@ The output is one of five states:
 | **COMMIT** | Signal clear. Low entropy. | Act with confidence |
 | **HOLD** | Fundamentals positive, timing uncertain | Position for entry |
 | **WAIT** | Two-way risk. No clear signal | Observe |
-| **ESCALATE** | Coherence degrading. Pressure building | Reduce exposure |
+| **CONSULT** | Coherence degrading. Pressure building | Reduce exposure |
 | **TOXIC** | Maximum entropy. Noise dominates | Stand aside |
 
 ---
@@ -178,9 +178,9 @@ The decision layer is the missing infrastructure in the AI stack. Models can ret
 
 🟢 **Live** · [nerva-globe.vercel.app](https://nerva-globe.vercel.app)
 
-Built and maintained by Anthony · Starpoint Enterprises LLC  
+Built and maintained by Anthony · Starpoint LLC  
 Contact: via GitHub issues
 
 ---
 
-*NERVA v9 · Signal Intelligence Surface · Starpoint Enterprises LLC · AMDG*
+*NERVA v9 · Signal Intelligence Surface · Starpoint LLC*

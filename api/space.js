@@ -228,7 +228,7 @@ async function fetchSolar() {
       entropy: parseFloat(entropy.toFixed(4)),
       entDelta,
       signal: parseFloat(((1-entropy)*100).toFixed(1)),
-      state: entropy < 0.25 ? 'COMMIT' : entropy < 0.42 ? 'HOLD' : entropy < 0.60 ? 'WAIT' : entropy < 0.78 ? 'ESCALATE' : 'TOXIC',
+      state: entropy < 0.25 ? 'COMMIT' : entropy < 0.42 ? 'HOLD' : entropy < 0.60 ? 'WAIT' : entropy < 0.78 ? 'CONSULT' : 'TOXIC',
       note,
       affectedNodes: ['GPS Constellation', 'Starlink', 'Solar Activity', 'ISS', 'Deep Space Comms'],
     },
@@ -318,7 +318,7 @@ async function fetchMoon() {
   const daysUntilFull = Math.round(Math.abs(0.5 - phase) * 29.53);
 
   // Lunar NERVA: Full moon = max illumination = COMMIT for surface ops
-  // New moon = dark = ESCALATE for navigation
+  // New moon = dark = CONSULT for navigation
   const lunarEntropy = phase < 0.1 || phase > 0.9 ? 0.65  // new moon: dark, hard to navigate
     : phase > 0.45 && phase < 0.55 ? 0.15                  // full moon: COMMIT, max visibility
     : 0.35;                                                  // quarters: HOLD
@@ -349,7 +349,7 @@ async function fetchMoon() {
       entDelta: parseFloat((lunarEntropy * 0.5).toFixed(4)),
       artemisEntropy,
       signal: parseFloat(((1-lunarEntropy)*100).toFixed(1)),
-      state: lunarEntropy < 0.25 ? 'COMMIT' : lunarEntropy < 0.42 ? 'HOLD' : lunarEntropy < 0.60 ? 'WAIT' : 'ESCALATE',
+      state: lunarEntropy < 0.25 ? 'COMMIT' : lunarEntropy < 0.42 ? 'HOLD' : lunarEntropy < 0.60 ? 'WAIT' : 'CONSULT',
       note,
     },
   };

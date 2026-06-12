@@ -84,8 +84,8 @@ export default async function handler(req, res) {
     return res.status(200).json({
       name: 'NERVA Decision Engine API',
       version: '1.0',
-      description: 'Quantum-inspired decision integrity engine. Returns COMMIT/HOLD/WAIT/ESCALATE/TOXIC signal with full entropy analysis.',
-      built_by: 'Starpoint Enterprises LLC',
+      description: 'Quantum-inspired decision integrity engine. Returns COMMIT/HOLD/WAIT/CONSULT/TOXIC signal with full entropy analysis.',
+      built_by: 'Starpoint LLC',
       modes: ['residential', 'corporate', 'geopolitical', 'custom'],
       horizons: { 0: '24h', 1: '72h', 2: '30d', 3: '6mo', 4: '2yr', 5: '10yr' },
       endpoint: 'POST /api/nerva',
@@ -140,7 +140,7 @@ export default async function handler(req, res) {
         horizon,
         horizonLabel: ['24h', '72h', '30d', '6mo', '2yr', '10yr'][horizon] || '72h',
         computedAt: new Date().toISOString(),
-        engine: 'NERVA v9 · Starpoint Enterprises LLC',
+        engine: 'NERVA v9 · Starpoint LLC',
       },
     });
 
@@ -201,10 +201,10 @@ function computeNERVA(mode, inputs, horizon, context) {
   const state = entropy < 0.25 ? 'COMMIT'
     : entropy < 0.42 ? 'HOLD'
     : entropy < 0.60 ? 'WAIT'
-    : entropy < 0.78 ? 'ESCALATE'
+    : entropy < 0.78 ? 'CONSULT'
     : 'TOXIC';
 
-  // Opportunity surface: ESCALATE/TOXIC now but improving at longer horizons
+  // Opportunity surface: CONSULT/TOXIC now but improving at longer horizons
   const opportunityScore = entropy > 0.6 && horizonDecayFactor < 0.7
     ? Math.round((entropy - 0.6) * 100 * (1 - horizonDecayFactor) * 2)
     : 0;
@@ -214,7 +214,7 @@ function computeNERVA(mode, inputs, horizon, context) {
     COMMIT:   'Decision surface coherent. Signal clear and actionable. Act with confidence.',
     HOLD:     'Fundamentals positive but timing uncertain. Position for entry, await catalyst.',
     WAIT:     'Genuine two-way risk. Insufficient signal clarity for commitment at this horizon.',
-    ESCALATE: 'Decision pressure building. Coherence degrading. Reduce exposure or prepare exit.',
+    CONSULT: 'Decision pressure building. Coherence degrading. Reduce exposure or prepare exit.',
     TOXIC:    'Maximum entropy. No actionable signal. Stand aside — noise has overwhelmed the field.',
   }[state];
 

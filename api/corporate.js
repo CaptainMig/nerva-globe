@@ -199,7 +199,7 @@ function computeCorporateNERVA(market, type, mortgageRate) {
   // Implied DSCR estimate
   const impliedDSCR = capRate > 0 ? parseFloat((capRate / ((mortgageRate / 100) * 0.65)).toFixed(2)) : 0;
 
-  const state = entropy < 0.25 ? 'COMMIT' : entropy < 0.42 ? 'HOLD' : entropy < 0.60 ? 'WAIT' : entropy < 0.78 ? 'ESCALATE' : 'TOXIC';
+  const state = entropy < 0.25 ? 'COMMIT' : entropy < 0.42 ? 'HOLD' : entropy < 0.60 ? 'WAIT' : entropy < 0.78 ? 'CONSULT' : 'TOXIC';
   const signal = parseFloat(((1 - entropy) * 100).toFixed(1));
 
   const why = [];
@@ -213,7 +213,7 @@ function computeCorporateNERVA(market, type, mortgageRate) {
   const action = state === 'COMMIT' ? `ACQUIRE — Strong fundamentals. Cap rate clears debt spread, vacancy controlled.`
     : state === 'HOLD' ? `HOLD EXISTING — Fundamentals adequate. Monitor vacancy trend before new commitments.`
     : state === 'WAIT' ? `WAIT — Market at inflection. Insufficient spread for new capital deployment.`
-    : state === 'ESCALATE' ? `REDUCE EXPOSURE — Vacancy trajectory and cap rate compression create negative carry risk.`
+    : state === 'CONSULT' ? `REDUCE EXPOSURE — Vacancy trajectory and cap rate compression create negative carry risk.`
     : `AVOID — Distressed market. Cap rate does not clear debt cost at current vacancy.`;
 
   return { state, signal, entropy: parseFloat(entropy.toFixed(4)), ev, impliedDSCR, why, action };

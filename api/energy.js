@@ -126,7 +126,7 @@ export default async function handler(req, res) {
       events,
       composite: {
         entropy: parseFloat(compositeEntropy.toFixed(4)),
-        state: compositeEntropy < 0.30 ? 'COMMIT' : compositeEntropy < 0.50 ? 'HOLD' : compositeEntropy < 0.65 ? 'WAIT' : 'ESCALATE',
+        state: compositeEntropy < 0.30 ? 'COMMIT' : compositeEntropy < 0.50 ? 'HOLD' : compositeEntropy < 0.65 ? 'WAIT' : 'CONSULT',
         signal: parseFloat(((1 - compositeEntropy) * 100).toFixed(1)),
         note: `Energy complex: ${compositeEntropy < 0.35 ? 'prices subdued, supply adequate' : compositeEntropy < 0.55 ? 'prices elevated but stable' : 'price volatility elevated — geopolitical risk premium building'}`,
       },
