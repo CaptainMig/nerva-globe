@@ -129,7 +129,7 @@ function transformListings(data, zip, type) {
   const nervaState = entropy < 0.25 ? 'COMMIT'
     : entropy < 0.42 ? 'HOLD'
     : entropy < 0.60 ? 'WAIT'
-    : entropy < 0.75 ? 'ESCALATE'
+    : entropy < 0.75 ? 'CONSULT'
     : 'TOXIC';
 
   // Market velocity signal

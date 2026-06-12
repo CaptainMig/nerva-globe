@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NERVA API · Decision Engine · Starpoint Enterprises</title>
+<title>NERVA API · Decision Engine · Starpoint LLC</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
@@ -507,7 +507,7 @@ footer {
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-label">Starpoint Enterprises LLC · v9</div>
+  <div class="hero-label">Starpoint LLC · v9</div>
   <h1>NERVA</h1>
   <div class="hero-sub">Quantum-Inspired Decision Integrity Engine</div>
   <div class="hero-meta">
@@ -552,7 +552,7 @@ footer {
         <div class="state-desc">Genuine two-way risk. Insufficient signal clarity for commitment at this horizon.</div>
       </div>
       <div class="state-card" style="border-color:rgba(249,115,22,.2)">
-        <div class="state-name" style="color:var(--escalate)">ESCALATE</div>
+        <div class="state-name" style="color:var(--escalate)">CONSULT</div>
         <div class="state-entropy">ψ 0.60 – 0.78</div>
         <div class="state-desc">Decision pressure building. Coherence degrading. Reduce exposure or prepare exit.</div>
       </div>
@@ -581,7 +581,7 @@ footer {
       <div class="endpoint-row">
         <div class="ep-method ep-post">POST</div>
         <div class="ep-url">/api/nerva</div>
-        <div class="ep-desc">Decision engine. Send any structured inputs, receive COMMIT/HOLD/WAIT/ESCALATE/TOXIC with full entropy analysis.</div>
+        <div class="ep-desc">Decision engine. Send any structured inputs, receive COMMIT/HOLD/WAIT/CONSULT/TOXIC with full entropy analysis.</div>
       </div>
       <div class="endpoint-row">
         <div class="ep-method ep-get">GET</div>
@@ -698,7 +698,7 @@ footer {
           <option value="">— Load Preset —</option>
           <option value="scotch_plains">Scotch Plains NJ (COMMIT)</option>
           <option value="sf_office">SF Office Market (TOXIC)</option>
-          <option value="ukraine">Ukraine Conflict (ESCALATE)</option>
+          <option value="ukraine">Ukraine Conflict (CONSULT)</option>
           <option value="miami_multifamily">Miami Multifamily (HOLD)</option>
         </select>
         <button class="demo-run" id="run-btn" onclick="runDemo()">⊛ RUN NERVA</button>
@@ -808,7 +808,7 @@ print(data[<span class="str">'evGate'</span>])   <span class="cmt"># False</span
 
     <div class="math-block">
       <div class="math-formula">ε(h) = ε₀ × δₕ</div>
-      <div class="math-desc">Entropy decays across time horizons. Short-term volatility does not survive to 10-year analysis. The decay factors are [1.0, 0.92, 0.80, 0.65, 0.50, 0.35] for horizons 24h through 10yr. A market crisis that is ESCALATE at 24h may be HOLD at 2yr — the structural entropy is lower once volatility has been removed.</div>
+      <div class="math-desc">Entropy decays across time horizons. Short-term volatility does not survive to 10-year analysis. The decay factors are [1.0, 0.92, 0.80, 0.65, 0.50, 0.35] for horizons 24h through 10yr. A market crisis that is CONSULT at 24h may be HOLD at 2yr — the structural entropy is lower once volatility has been removed.</div>
     </div>
 
     <div style="margin-top:32px">
@@ -880,12 +880,11 @@ print(data[<span class="str">'evGate'</span>])   <span class="cmt"># False</span
 <footer>
   <div class="container">
     <div class="footer-brand">NERVA</div>
-    <div class="footer-sub" style="margin-bottom:16px">Signal Intelligence Surface · v9 · Starpoint Enterprises LLC</div>
+    <div class="footer-sub" style="margin-bottom:16px">Signal Intelligence Surface · v9 · Starpoint LLC</div>
     <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap">
       <a href="https://nerva-globe.vercel.app" target="_blank" style="color:var(--t3);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-decoration:none">GLOBE ↗</a>
       <a href="https://github.com/CaptainMig/nerva-globe" target="_blank" style="color:var(--t3);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-decoration:none">GITHUB ↗</a>
     </div>
-    <div style="margin-top:24px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:2px">AMDG</div>
   </div>
 </footer>
 
@@ -938,7 +937,7 @@ const PAYLOADS = {
 };
 
 const STATE_COLORS = {
-  COMMIT: '#00ff9d', HOLD: '#fbbf24', WAIT: '#60a5fa', ESCALATE: '#f97316', TOXIC: '#ff1744',
+  COMMIT: '#00ff9d', HOLD: '#fbbf24', WAIT: '#60a5fa', CONSULT: '#f97316', TOXIC: '#ff1744',
 };
 
 function syntaxHighlight(obj) {

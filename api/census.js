@@ -183,8 +183,8 @@ function parseRow(row, geoType) {
   // NERVA entropy: high P/I ratio = high entropy (unresolvable decision surface)
   // P/I < 3 → entropy 0.15 (COMMIT territory)
   // P/I 3-5 → entropy 0.30-0.45 (HOLD)
-  // P/I 5-8 → entropy 0.45-0.65 (WAIT/ESCALATE)
-  // P/I > 8 → entropy 0.65-0.90 (ESCALATE/TOXIC)
+  // P/I 5-8 → entropy 0.45-0.65 (WAIT/CONSULT)
+  // P/I > 8 → entropy 0.65-0.90 (CONSULT/TOXIC)
   const entropy = medianHomeValue > 0
     ? Math.min(0.92, Math.max(0.10, (priceToIncome - 1) / 12))
     : 0.50;
@@ -203,7 +203,7 @@ function parseRow(row, geoType) {
   const nervaState = affordIndex > 72 ? 'COMMIT'
     : affordIndex > 55 ? 'HOLD'
     : affordIndex > 38 ? 'WAIT'
-    : affordIndex > 22 ? 'ESCALATE'
+    : affordIndex > 22 ? 'CONSULT'
     : 'TOXIC';
 
   // Signal strength (inverse of entropy, scaled)
@@ -223,7 +223,7 @@ function parseRow(row, geoType) {
   const action = nervaState === 'COMMIT' ? `BUY — Strong fundamentals. P/I ${priceToIncome.toFixed(1)}x, yield ${rentYieldEst.toFixed(1)}%.`
     : nervaState === 'HOLD' ? `HOLD — Monitor for entry. Watch rates and inventory.`
     : nervaState === 'WAIT' ? `WAIT — Insufficient clarity. Two-way risk at current prices.`
-    : nervaState === 'ESCALATE' ? `CAUTION — Affordability stress building. Position defensively.`
+    : nervaState === 'CONSULT' ? `CAUTION — Affordability stress building. Position defensively.`
     : `AVOID — P/I ${priceToIncome.toFixed(1)}x unsustainable. Insurance/rent math broken.`;
 
   // Geographic ID
